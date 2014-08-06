@@ -1018,21 +1018,6 @@ function churchcore_sort (&$array, $key) {
   $array=$ret;
 }
 
-/**
- * Joins an array
- * @param unknown $arr
- * @param unknown $joiner like "::"
- * @param unknown $field like "bezeichnung"
- * @return string
- */
-function implode_array($arr, $joiner, $field) {
-  $res=array();
-  foreach ($arr as $a) {
-    $res[]=$a->$field;
-  }
-  return implode($res, $joiner);
-}
-
 function drupal_get_path($m, $module) {
   return "system/".$module."";
 }
@@ -1513,18 +1498,6 @@ function isFullDay($start, $end) {
   if (($start->format('H:i:s')=="00:00:00") && ($end==null || $end->format('H:i:s')=="00:00:00"))
     return true;
   return false;  
-}
-
-/**
- * Return is s1 and s2 is same day
- * @param String $s1 - english format
- * @param String $s2 - english format
- * @return boolean
- */
-function churchcore_isSameDay($s1, $s2) {
-  $d1=churchcore_stringToDateTime($s1);
-  $d2=churchcore_stringToDateTime($s2);
-  return $d1->format("Ymd")==$d2->format("Ymd");
 }
 
 function datesInConflict($startdate, $enddate, $startdate2, $enddate2) {
