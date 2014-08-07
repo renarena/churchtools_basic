@@ -15,15 +15,15 @@
 function churchresource_main() {
   drupal_add_js('system/assets/js/jquery.history.js'); 
   
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_abstractview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_standardview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_maintainstandardview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_interface.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_abstractview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_maintainstandardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_interface.js'); 
 
-  drupal_add_js(drupal_get_path('module', 'churchresource') .'/cr_loadandmap.js');
-  drupal_add_js(drupal_get_path('module', 'churchresource') .'/cr_maintainview.js');
-  drupal_add_js(drupal_get_path('module', 'churchresource') .'/cr_weekview.js');
-  drupal_add_js(drupal_get_path('module', 'churchresource') .'/cr_main.js');
+  drupal_add_js(CHURCHRESOURCE .'/cr_loadandmap.js');
+  drupal_add_js(CHURCHRESOURCE .'/cr_maintainview.js');
+  drupal_add_js(CHURCHRESOURCE .'/cr_weekview.js');
+  drupal_add_js(CHURCHRESOURCE .'/cr_main.js');
   
   drupal_add_js(createI18nFile("churchcore"));
   drupal_add_js(createI18nFile("churchresource"));
@@ -132,7 +132,7 @@ function churchresource_getCurrentBookings() {
         
         foreach ($arr as $val) {
           $txt.="<li><p><a href=\"?q=churchresource&id=".$val["id"]."\">".$val["text"]."</a> ";
-          if ($val["repeat_id"]>0) $txt.='<img title="Serie startet vom '.$val["startdate"]->format('d.m.Y H:i').'" src="system/churchresource/images/recurring.png" width="16px"/> ';        
+          if ($val["repeat_id"]>0) $txt.='<img title="Serie startet vom '.$val["startdate"]->format('d.m.Y H:i').'" src=CHURCHRESOURCE."/images/recurring.png" width="16px"/> ';        
           $txt.="(".$resources[$val["resource_id"]]->bezeichnung.")<br/><small>".$val["realstart"]->format('d.m.Y H:i')." ".$val["person_name"]."</small><br/>";
         }
         if ($txt!="") 
@@ -166,10 +166,10 @@ global $user;
   
   $content="<html><head>";
   
-  drupal_add_js("system/assets/js/jquery-1.10.2.min.js");
-  drupal_add_js("system/assets/js/jquery-migrate-1.2.1.min.js");
+  drupal_add_js(ASSETS."/js/jquery-1.10.2.min.js");
+  drupal_add_js(ASSETS."/js/jquery-migrate-1.2.1.min.js");
   
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/shortcut.js'); 
+  drupal_add_js(CHURCHCORE .'/shortcut.js'); 
   drupal_add_js('system/assets/js/jquery.history.js'); 
   
   drupal_add_js('system/assets/ui/jquery.ui.core.min.js');
@@ -182,25 +182,25 @@ global $user;
   drupal_add_js('system/assets/ui/jquery.ui.draggable.min.js');
   drupal_add_js('system/assets/ui/jquery.ui.resizable.min.js');
   
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/churchcore.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/churchforms.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_abstractview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_standardview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_maintainstandardview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_interface.js'); 
+  drupal_add_js(CHURCHCORE .'/churchcore.js'); 
+  drupal_add_js(CHURCHCORE .'/churchforms.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_abstractview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_maintainstandardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_interface.js'); 
 
-  drupal_add_js(drupal_get_path('module', 'churchresource') .'/cr_loadandmap.js');
-  drupal_add_js(drupal_get_path('module', 'churchresource') .'/cr_maintainview.js');
-  drupal_add_js(drupal_get_path('module', 'churchresource') .'/cr_weekview.js');
-  drupal_add_js(drupal_get_path('module', 'churchresource') .'/cr_main.js');
+  drupal_add_js(CHURCHRESOURCE .'/cr_loadandmap.js');
+  drupal_add_js(CHURCHRESOURCE .'/cr_maintainview.js');
+  drupal_add_js(CHURCHRESOURCE .'/cr_weekview.js');
+  drupal_add_js(CHURCHRESOURCE .'/cr_main.js');
    
   drupal_add_js(createI18nFile("churchcore"));
   drupal_add_js(createI18nFile("churchresource"));
   
   $content=$content.drupal_get_header();
   
-  $content=$content.'<link type="text/css" rel="stylesheet" media="all" href="'.drupal_get_path('module', 'includes').'/churchtools.css" />';
-  $content=$content.'<link type="text/css" rel="stylesheet" media="all" href="'.drupal_get_path('module', 'churchresource').'/cr_printview.css" />';
+  $content=$content.'<link type="text/css" rel="stylesheet" media="all" href="'.INCLUDES.'/churchtools.css" />';
+  $content=$content.'<link type="text/css" rel="stylesheet" media="all" href="'.CHURCHRESOURCE.'/cr_printview.css" />';
     
   $content=$content."</head><body>";
   $content=$content."<input type=\"hidden\" id=\"printview\" value=\"true\"/>";
@@ -272,7 +272,7 @@ class CTChurchResourceModule extends CTAbstractModule {
   public function getMasterData() {
     global $user;
     $res=array();
-    include_once(drupal_get_path('module', 'churchcal') .'/churchcal_db.inc');
+    include_once(CHURCHCAL .'/churchcal_db.inc');
     $res=$this->getMasterDataTables();
     $res["masterDataTables"] = $this->getMasterDataTablenames();
     $res["auth"] = churchresource_getAuthForAjax();

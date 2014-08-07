@@ -13,7 +13,7 @@
 
 
 function ical_main() {
-  include_once(drupal_get_path('module', 'churchservice').'/churchservice_ajax.inc');
+  include_once(CHURCHSERVICE.'/churchservice_ajax.inc');
   call_user_func("churchservice_ical");
 }
 
@@ -22,13 +22,13 @@ function churchservice__ajax() {
     addInfoMessage(t("no.permission.for", $config["churchservice_name"]));
     return " ";
   }
-  include_once(drupal_get_path('module', 'churchservice').'/churchservice_ajax.inc');
+  include_once(CHURCHSERVICE.'/churchservice_ajax.inc');
   call_user_func("churchservice_ajax");
 }
 
 
 function churchservice__filedownload() {
-  include_once("system/churchcore/churchcore.php");
+  include_once(CHURCHCORE."/churchcore.php");
   churchcore__filedownload();  
 }
 
@@ -147,20 +147,20 @@ function churchservice__printview() {
   drupal_add_js('system/assets/ckeditor/ckeditor.js');
   drupal_add_js('system/assets/ckeditor/lang/de.js');
 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_abstractview.js');
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_standardview.js');
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_maintainstandardview.js');
+  drupal_add_js(CHURCHCORE .'/cc_abstractview.js');
+  drupal_add_js(CHURCHCORE .'/cc_standardview.js');
+  drupal_add_js(CHURCHCORE .'/cc_maintainstandardview.js');
 
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_loadandmap.js');
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_settingsview.js');
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_maintainview.js');
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_listview.js');
-  //drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_testview.js');
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_calview.js');
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_factview.js');
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_agendaview.js');
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_songview.js');
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_main.js');
+  drupal_add_js(CHURCHSERVICE .'/cs_loadandmap.js');
+  drupal_add_js(CHURCHSERVICE .'/cs_settingsview.js');
+  drupal_add_js(CHURCHSERVICE .'/cs_maintainview.js');
+  drupal_add_js(CHURCHSERVICE .'/cs_listview.js');
+  //drupal_add_js(CHURCHSERVICE .'/cs_testview.js');
+  drupal_add_js(CHURCHSERVICE .'/cs_calview.js');
+  drupal_add_js(CHURCHSERVICE .'/cs_factview.js');
+  drupal_add_js(CHURCHSERVICE .'/cs_agendaview.js');
+  drupal_add_js(CHURCHSERVICE .'/cs_songview.js');
+  drupal_add_js(CHURCHSERVICE .'/cs_main.js');
 
   drupal_add_js(createI18nFile("churchcore"));
   drupal_add_js(createI18nFile("churchservice"));
@@ -205,20 +205,20 @@ function churchservice_main() {
   drupal_add_js('system/assets/ckeditor/ckeditor.js');
   drupal_add_js('system/assets/ckeditor/lang/de.js');  
     
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_abstractview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_standardview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_maintainstandardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_abstractview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_maintainstandardview.js'); 
   
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_loadandmap.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_settingsview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_maintainview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_listview.js'); 
-  //drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_testview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_calview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_factview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_agendaview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_songview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchservice') .'/cs_main.js'); 
+  drupal_add_js(CHURCHSERVICE .'/cs_loadandmap.js'); 
+  drupal_add_js(CHURCHSERVICE .'/cs_settingsview.js'); 
+  drupal_add_js(CHURCHSERVICE .'/cs_maintainview.js'); 
+  drupal_add_js(CHURCHSERVICE .'/cs_listview.js'); 
+  //drupal_add_js(CHURCHSERVICE .'/cs_testview.js'); 
+  drupal_add_js(CHURCHSERVICE .'/cs_calview.js'); 
+  drupal_add_js(CHURCHSERVICE .'/cs_factview.js'); 
+  drupal_add_js(CHURCHSERVICE .'/cs_agendaview.js'); 
+  drupal_add_js(CHURCHSERVICE .'/cs_songview.js'); 
+  drupal_add_js(CHURCHSERVICE .'/cs_main.js'); 
     
   drupal_add_js(createI18nFile("churchcore"));
   drupal_add_js(createI18nFile("churchservice"));
@@ -251,7 +251,7 @@ function churchservice_getUserOpenServices() {
   global $user;
   
   if (isset($_GET["eventservice_id"])) {
-    include_once('./'. drupal_get_path('module', 'churchservice') .'/churchservice_ajax.inc');
+    include_once('./'. CHURCHSERVICE .'/churchservice_ajax.inc');
     $reason=null;
     if (isset($_GET["reason"])) $reason=$_GET["reason"];
     if ($_GET["zugesagt_yn"]==1)
@@ -261,7 +261,7 @@ function churchservice_getUserOpenServices() {
     addInfoMessage("Danke f&uuml;r deine R&uuml;ckmeldung!");
   }
   
-  include_once('./'. drupal_get_path('module', 'churchdb') .'/churchdb_db.inc');
+  include_once('./'. CHURCHDB .'/churchdb_db.inc');
   $txt="";
   $pid = $user->id;
   $txt1="";        
@@ -362,7 +362,7 @@ function churchservice_getCurrentEvents() {
 function churchservice_getUserNextServices($shorty=true) {
   global $user;
   
-  include_once('./'. drupal_get_path('module', 'churchdb') .'/churchdb_db.inc');
+  include_once('./'. CHURCHDB .'/churchdb_db.inc');
   
   $pid=$user->id;
   $res = db_query("select e.id event_id, cal.bezeichnung event, DATE_FORMAT(e.startdate, '%d.%m.%Y %H:%i') datum, s.bezeichnung service, sg.bezeichnung servicegroup, cdb_person_id, DATE_FORMAT(es.modified_date, '%d.%m.%Y %H:%i') modified_date
@@ -421,7 +421,7 @@ function churchservice_getAbsents($year=null) {
   
   if (user_access("view","churchdb")) {
     $user=$_SESSION["user"];
-    include_once(drupal_get_path('module', 'churchdb').'/churchdb_db.inc');
+    include_once(CHURCHDB.'/churchdb_db.inc');
     $groups=churchdb_getMyGroups($user->id, true, true);
     $allPersonIds=churchdb_getAllPeopleIdsFromGroups($groups);
     
@@ -577,7 +577,7 @@ function churchservice_openservice_rememberdays() {
 
     // Person wurde noch nicht eingeladen, also schicke gleich eine Einladung mit!
     if ($res->invite==1) {
-      include_once(drupal_get_path('module', 'churchdb').'/churchdb_ajax.inc');
+      include_once(CHURCHDB.'/churchdb_ajax.inc');
       churchdb_invitePersonToSystem($res->p_id);
       $txt.="<p><b>Da Du noch nicht kein Zugriff auf das System hast, bekommst Du noch eine separate E-Mail, mit der Du Dich dann anmelden kannst!.</b>";
     }
@@ -749,7 +749,7 @@ function churchservice_inform_leader() {
 function churchservice_cron() {
   global $base_url;
   
-  include_once('./'. drupal_get_path('module', 'churchservice') .'/churchservice_ajax.inc');
+  include_once('./'. CHURCHSERVICE .'/churchservice_ajax.inc');
   
   churchservice_openservice_rememberdays();
   churchservice_remindme();

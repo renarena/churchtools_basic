@@ -34,7 +34,7 @@ function prooveOldPassword($form) {
 }
 
 function profile_main() {
-  include_once("system/includes/forms.php");
+  include_once(INCLUDES."/forms.php");
 
   $model = new CC_Model("PasswortChangeForm", "prooveOldPassword");
   if ($_SESSION["user"]->password!=null) { 

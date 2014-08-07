@@ -3,7 +3,7 @@
 
 function about_main() {
   global $config;
-  include_once("system/includes/forms.php");
+  include_once(INCLUDES."/forms.php");
 
   if (isset($_GET["consistentcheck"])) {
     return check_db_constraints(false);    

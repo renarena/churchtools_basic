@@ -30,20 +30,18 @@ function churchauth_main() {
   drupal_add_css('system/assets/dynatree/ui.dynatree.css');
   drupal_add_js('system/assets/dynatree/jquery.dynatree-1.2.4.js');
    
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/churchcore.js');
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/churchforms.js');
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_abstractview.js');
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_standardview.js');
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_maintainstandardview.js');
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_interface.js');
+  drupal_add_js(CHURCHCORE .'/churchcore.js');
+  drupal_add_js(CHURCHCORE .'/churchforms.js');
+  drupal_add_js(CHURCHCORE .'/cc_abstractview.js');
+  drupal_add_js(CHURCHCORE .'/cc_standardview.js');
+  drupal_add_js(CHURCHCORE .'/cc_maintainstandardview.js');
+  drupal_add_js(CHURCHCORE .'/cc_interface.js');
    
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_authview.js');
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_authmain.js');
+  drupal_add_js(CHURCHCORE .'/cc_authview.js');
+  drupal_add_js(CHURCHCORE .'/cc_authmain.js');
   
   drupal_add_js(createI18nFile("churchcore"));
   
-  $content="";
-   
   $content=$content."
 <div class=\"row-fluid\">
   <div class=\"span3\">
@@ -62,8 +60,14 @@ function churchauth_main() {
 
 class CTChurchAuthModule extends CTAbstractModule {	
 
-
-
+  // uses __constructor of parent class
+  
+  /**
+   * Save Auth
+   * 
+   * @param unknown $params
+   * @throws CTNoPermission
+   */
   public function saveAuth($params) {
     if (!user_access("administer persons","churchcore")) 
   	  throw new CTNoPermission("administer persons", "churchcore");

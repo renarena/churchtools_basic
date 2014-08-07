@@ -21,7 +21,7 @@ function _simulateUser($res) {
 }
 
 function simulate_main() {
-  include_once("system/includes/forms.php");
+  include_once(INCLUDES."/forms.php");
   
   if (isset($_SESSION["simulate"])) {
     $user=churchcore_getPersonById($_SESSION["simulate"]);

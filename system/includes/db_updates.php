@@ -5,8 +5,17 @@ function set_version($db_version) {
   set_time_limit(300);
 }
 
+/**
+ * update DB for new versions of CT
+ * 
+ * TODO: do you notice if there are sql errors?
+ *  
+ * @param $db_version
+ * @return boolean
+ */
 function run_db_updates($db_version) {
-  global $config, $base_url, $user;
+  global $config, $base_url, $user, $files_dir;
+
   set_time_limit(300);
 
   switch($db_version) {
@@ -601,6 +610,7 @@ function run_db_updates($db_version) {
 
       db_query("CREATE TABLE {cc_domain_auth} (domain_type varchar(30) NOT NULL, domain_id int(11) NOT NULL, auth_id int(11) NOT NULL,  daten_id int(11) DEFAULT NULL) CHARSET=utf8");
       addInfoMessage("Installiere Tabellen f&uuml;r Version 2.00");
+
       /* fall through to regular update */
     case '2.00':
       db_query("ALTER TABLE {cs_servicegroup} ADD viewall_yn int( 1 ) NOT NULL DEFAULT 0 AFTER bezeichnung");
@@ -793,7 +803,6 @@ function run_db_updates($db_version) {
       set_version("2.15");
     
     case '2.15':
-      global $files_dir;
       db_query("INSERT INTO  {cc_auth} (id, auth, modulename, bezeichnung) values (311, 'view song', 'churchservice', 'Darf die Songs anschauen und Dateien herunterladen')");
       db_query("INSERT INTO  {cc_auth} (id, auth, modulename, bezeichnung) values (312, 'edit song', 'churchservice', 'Darf die Songs editieren und Dateien hochladen')");
       db_query("CREATE TABLE {cs_song} (
@@ -891,305 +900,301 @@ function run_db_updates($db_version) {
       db_query("INSERT INTO {cdb_feldkategorie} VALUES (3, 'Kategorien', 'f_category', 'cdb_gemeindeperson', 'id')");
       db_query("INSERT INTO {cdb_feldkategorie} VALUES (4, 'Gruppe', 'f_group', 'cdb_gruppe', 'id')");
       
-     db_query("
-    CREATE TABLE {cdb_feldtyp} (
-      id int(11) NOT NULL,
-      bezeichnung varchar(30) NOT NULL,
-      intern_code varchar(10) NOT NULL,
-      PRIMARY KEY (id)
-    ) CHARSET=utf8");
-    
-    db_query("INSERT INTO {cdb_feldtyp} VALUES (1, 'Textfeld', 'text')");
-    db_query("INSERT INTO {cdb_feldtyp} VALUES (2, 'Auswahlfeld', 'select')");
-    db_query("INSERT INTO {cdb_feldtyp} VALUES (3, 'Datumsfeld', 'date');");
-    db_query("INSERT INTO {cdb_feldtyp} VALUES (4, 'Ja-Nein-Feld', 'checkbox')");
-    db_query("INSERT INTO {cdb_feldtyp} VALUES (5, 'Kommentarfeld', 'textarea')");
-     
-     db_query("
-    CREATE TABLE {cdb_feld} (
-      id int(11) NOT NULL,
-      feldkategorie_id int(11) NOT NULL,
-      feldtyp_id int(11) NOT NULL,
-      db_spalte varchar(50) NOT NULL,
-      db_stammdatentabelle varchar(50) DEFAULT NULL,
-      aktiv_yn int(1) NOT NULL DEFAULT '1',
-      langtext varchar(200) NOT NULL,
-      kurztext varchar(50) NOT NULL,
-      zeilenende varchar(10) NOT NULL,
-      autorisierung varchar(50) DEFAULT NULL,
-      laenge int(3) DEFAULT NULL,
-      sortkey int(11) NOT NULL,
-      PRIMARY KEY (id)
-    ) CHARSET=utf8");
-    
-    db_query("INSERT INTO {cdb_feld} VALUES(1, 1, 1, 'titel', NULL, 1, 'Titel', '', '', NULL, 12, 1)");
-    db_query("INSERT INTO {cdb_feld} VALUES(2, 1, 1, 'vorname', NULL, 1, 'Vorname', '', '&nbsp;', NULL, 30, 2)");
-    db_query("INSERT INTO {cdb_feld} VALUES(3, 1, 1, 'name', NULL, 1, 'Name', '', '<br/>', NULL, 30, 3)");
-    db_query("INSERT INTO {cdb_feld} VALUES(4, 1, 1, 'strasse', NULL, 1, 'Strasse', '', '<br/>', 'ViewAllDetailsOrPersonLeader', 30, 4)");
-    db_query("INSERT INTO {cdb_feld} VALUES(5, 1, 1, 'zusatz', NULL, 1, 'Addresszusatz', '', '<br/>', 'ViewAllDetailsOrPersonLeader', 30, 5)");
-    db_query("INSERT INTO {cdb_feld} VALUES(6, 1, 1, 'plz', NULL, 1, 'Postleitzahl', '', '&nbsp;', NULL, 6, 6)");
-    db_query("INSERT INTO {cdb_feld} VALUES(7, 1, 1, 'ort', NULL, 1, 'Ort', '', '<br/>', NULL, 40, 7)");
-    db_query("INSERT INTO {cdb_feld} VALUES(8, 1, 1, 'land', NULL, 1, 'Land', '', '<br/><br/>', NULL, 30, 8)");
-    db_query("INSERT INTO {cdb_feld} VALUES(9, 1, 2, 'geschlecht_no', 'sex', 1, 'Geschlecht', 'Geschlecht', '<br/>', NULL, 11, 9)");
-    db_query("INSERT INTO {cdb_feld} VALUES(10, 1, 1, 'telefonprivat', NULL, 1, 'Telefon privat', 'Tel. privat', '<br/>', NULL, 30, 10)");
-    db_query("INSERT INTO {cdb_feld} VALUES(11, 1, 1, 'telefongeschaeftlich', NULL, 1, 'Telefon gesch&auml;ftl.', 'Tel. gesch&auml;ft.', '<br/>', NULL, 20, 11)");
-    db_query("INSERT INTO {cdb_feld} VALUES(12, 1, 1, 'telefonhandy', NULL, 1, 'Mobil', 'Mobil', '<br/>', NULL, 20, 12)");
-    db_query("INSERT INTO {cdb_feld} VALUES(13, 1, 1, 'fax', NULL, 1, 'Fax', 'Fax', '<br/>', NULL, 20, 13)");
-    db_query("INSERT INTO {cdb_feld} VALUES(14, 1, 1, 'email', NULL, 1, 'E-Mail', 'E-Mail', '<br/>', NULL, 50, 14)");
-    db_query("INSERT INTO {cdb_feld} VALUES(15, 1, 1, 'cmsuserid', NULL, 1, 'Benutzername', 'Benutzername', '<br/>', NULL, 50, 15)");
-    db_query("INSERT INTO {cdb_feld} VALUES(16, 2, 3, 'geburtsdatum', NULL, 1, 'Geburtsdatum', 'Geburtsdatum', '<br/>', NULL, 0, 1)");
-    db_query("INSERT INTO {cdb_feld} VALUES(17, 2, 1, 'geburtsname', NULL, 1, 'Geburtsname', 'Geburtsname', '<br/>', NULL, 30, 2)");
-    db_query("INSERT INTO {cdb_feld} VALUES(18, 2, 1, 'geburtsort', NULL, 1, 'Geburtsort', 'Geburtsort', '<br/>', NULL, 30, 3)");
-    db_query("INSERT INTO {cdb_feld} VALUES(19, 2, 1, 'beruf', NULL, 1, 'Beruf', 'Beruf', '<br/>', NULL, 50, 4)");
-    db_query("INSERT INTO {cdb_feld} VALUES(20, 2, 1, 'nationalitaet_id', 'nationalitaet', 2, 'Nationalit&auml;t', 'Nationalit&auml;t', '<br/>', NULL, 11, 5)");
-    db_query("INSERT INTO {cdb_feld} VALUES(21, 2, 2, 'familienstand_no', 'familyStatus', 1, 'Familenstand', 'Familenstand', '<br/>', NULL, 11, 6)");
-    db_query("INSERT INTO {cdb_feld} VALUES(22, 2, 3, 'hochzeitsdatum', NULL, 1, 'Hochzeitstag', 'Hochzeitstag', '<br/><br/>', NULL, 0, 7)");
-    db_query("INSERT INTO {cdb_feld} VALUES(23, 2, 3, 'erstkontakt', NULL, 1, 'Erstkontakt', 'Erstkontakt', '<br/>', NULL, 0, 8)");
-    db_query("INSERT INTO {cdb_feld} VALUES(24, 2, 3, 'zugehoerig', NULL, 1, 'Zugeh&ouml;rig', 'Zugeh&ouml;rig', '<br/>', NULL, 0, 9)");
-    db_query("INSERT INTO {cdb_feld} VALUES(25, 2, 3, 'eintrittsdatum', NULL, 1, 'Mitglied seit', 'Mitglied seit', '<br/>', NULL, 0, 10)");
-    db_query("INSERT INTO {cdb_feld} VALUES(26, 2, 1, 'ueberweisen von', NULL, 1, '&Uuml;berwiesen von', '&Uuml;berwiesen von', '<br/>', NULL, 30, 11)");
-    db_query("INSERT INTO {cdb_feld} VALUES(27, 2, 3, 'austrittsdatum', NULL, 1, 'Mitglied bis', 'Mitglied bis', '<br/>', NULL, 0, 12)");
-    db_query("INSERT INTO {cdb_feld} VALUES(28, 2, 1, 'ueberwiesen nach', NULL, 1, '&Uuml;berwiesen nach', '&Uuml;berwiesen nach', '<br/><br/>', NULL, 30, 13)");
-    db_query("INSERT INTO {cdb_feld} VALUES(29, 2, 3, 'taufdatum', NULL, 1, 'Taufdatum', 'Taufdatum', '<br/>', NULL, 0, 14)");
-    db_query("INSERT INTO {cdb_feld} VALUES(30, 2, 1, 'taufort', NULL, 1, 'Taufort', '', '<br/>', NULL, 50, 15)");
-    db_query("INSERT INTO {cdb_feld} VALUES(31, 2, 1, 'getauftdurch', NULL, 1, 'Getauft durch', 'Getauft durch', '<br/>', NULL, 50, 16)");
-    db_query("INSERT INTO {cdb_feld} VALUES(32, 3, 2, 'status_id', 'status', 1, 'Status', 'Status', '<br/>', NULL, 11, 1)");
-    db_query("INSERT INTO {cdb_feld} VALUES(33, 3, 2, 'station_id', 'station', 1, 'Station', 'Station', '<br/>', NULL, 11, 2)");
-    db_query("INSERT INTO {cdb_feld} VALUES(34, 4, 1, 'bezeichnung', NULL, 1, 'Bezeichnung', 'Bezeichnung', '<br/>', NULL, 35, 1)");
-    db_query("INSERT INTO {cdb_feld} VALUES(35, 4, 2, 'distrikt_id', 'districts', 1, 'Distrikt', 'Distrikt', '<br/>', 'admingroups', 11, 2)");
-    db_query("INSERT INTO {cdb_feld} VALUES(36, 4, 2, 'followup_typ_id', 'followupTypes', 1, 'Followup-Typ', 'Followup-Typ', '<br/>', 'admingroups', 11, 3)");
-    db_query("INSERT INTO {cdb_feld} VALUES(37, 4, 2, 'fu_nachfolge_typ_id', 'FUNachfolgeDomains', 1, 'Followup-Nachfolger', 'Followup-Nachfolger', '<br/>', 'admingroups', 11, 4)");
-    db_query("INSERT INTO {cdb_feld} VALUES(38, 4, 2, 'fu_nachfolge_objekt_id', 'code:selectNachfolgeObjektId', 1, 'Followup-Nachfolger-Auswahl', 'Followup-Nachfolger-Auswahl', '<br/>', 'admingroups', 11, 5)");
-    db_query("INSERT INTO {cdb_feld} VALUES(39, 4, 3, 'gruendungsdatum', NULL, 1, 'Gr&uuml;ndungsdatum', 'Gr&uuml;ndungsdatum', '<br/>', NULL, 0, 6)");
-    db_query("INSERT INTO {cdb_feld} VALUES(40, 4, 3, 'abschlussdatum', NULL, 1, 'Abschlussdatum', 'Abschlussdatum', '<br/>', NULL, 0, 7)");
-    db_query("INSERT INTO {cdb_feld} VALUES(41, 4, 1, 'treffzeit', NULL, 1, 'Zeit des Treffens', 'Treffzeit', '<br/>', NULL, 30, 8)");
-    db_query("INSERT INTO {cdb_feld} VALUES(42, 4, 1, 'treffpunkt', NULL, 1, 'Ort des Treffens', 'Treffort', '<br/>', NULL, 50, 9)");
-    db_query("INSERT INTO {cdb_feld} VALUES(43, 4, 1, 'treffname', NULL, 1, 'Treffen bei', 'Treffen bei', '<br/>', NULL, 30, 10)");
-    db_query("INSERT INTO {cdb_feld} VALUES(44, 4, 1, 'zielgruppe', NULL, 1, 'Zielgruppe', 'Zielgruppe', '<br/>', NULL, 30, 11)");
-    db_query("INSERT INTO {cdb_feld} VALUES(45, 4, 5, 'notiz', NULL, 1, 'Notiz', 'Notiz', '<br/>', NULL, 200, 12)");
-    db_query("INSERT INTO {cdb_feld} VALUES(46, 4, 4, 'valid_yn', NULL, 1, '<p>Gruppe ausw&auml;hlbar<br/><small>Bei Verneinung kann die Gruppe nicht mehr zugeordnet und gefiltert werden</small>', 'Ausw&auml;hlbar', '<br/>', 'admingroups', 1, 13)");
-    db_query("INSERT INTO {cdb_feld} VALUES(47, 4, 4, 'versteckt_yn', NULL, 1, '<p>Versteckte Gruppe<br/><small>Gruppe ist nur f&uuml;r Gruppenadmins & Leiter sichbar</small>', 'Versteckt', '<br/>', 'admingroups', 1, 14)");
-    db_query("INSERT INTO {cdb_feld} VALUES(48, 4, 4, 'instatistik_yn', NULL, 1, '<p>Zeige in Statistik<br/><small>In der Statistik explizit aufgef&uuml;hrt</small>', 'In Statistik', '<br/>', 'admingroups', 1, 15)");
-    db_query("INSERT INTO {cdb_feld} VALUES(49, 4, 4, 'treffen_yn', NULL, 1, '<p>W&ouml;chentliche Teilnahme pflegen<br/><small>Erm&ouml;glicht die Pflege der Teilnahme an dieser Gruppe</small>', 'Teilnahme', '<br/>', 'admingroups', 1, 16)");
-    db_query("INSERT INTO {cdb_feld} VALUES(50, 1, 1, 'optigem_nr', NULL, 1, 'Optigem-Nr', 'Optigem-Nr.', '<br/>', 'admin', NULL, 16)");
+      db_query("CREATE TABLE {cdb_feldtyp} (
+        id int(11) NOT NULL,
+        bezeichnung varchar(30) NOT NULL,
+        intern_code varchar(10) NOT NULL,
+        PRIMARY KEY (id)
+        ) CHARSET=utf8");
       
-    db_query("CREATE TABLE {cdb_nationalitaet} (
-      id int(11) NOT NULL,
-      bezeichnung varchar(50) not null,
-      PRIMARY KEY (id)
-    )");
+      db_query("INSERT INTO {cdb_feldtyp} VALUES (1, 'Textfeld', 'text')");
+      db_query("INSERT INTO {cdb_feldtyp} VALUES (2, 'Auswahlfeld', 'select')");
+      db_query("INSERT INTO {cdb_feldtyp} VALUES (3, 'Datumsfeld', 'date');");
+      db_query("INSERT INTO {cdb_feldtyp} VALUES (4, 'Ja-Nein-Feld', 'checkbox')");
+      db_query("INSERT INTO {cdb_feldtyp} VALUES (5, 'Kommentarfeld', 'textarea')");
+       
+      db_query("CREATE TABLE {cdb_feld} (
+        id int(11) NOT NULL,
+        feldkategorie_id int(11) NOT NULL,
+        feldtyp_id int(11) NOT NULL,
+        db_spalte varchar(50) NOT NULL,
+        db_stammdatentabelle varchar(50) DEFAULT NULL,
+        aktiv_yn int(1) NOT NULL DEFAULT '1',
+        langtext varchar(200) NOT NULL,
+        kurztext varchar(50) NOT NULL,
+        zeilenende varchar(10) NOT NULL,
+        autorisierung varchar(50) DEFAULT NULL,
+        laenge int(3) DEFAULT NULL,
+        sortkey int(11) NOT NULL,
+        PRIMARY KEY (id)
+        ) CHARSET=utf8");
+      
+      db_query("INSERT INTO {cdb_feld} VALUES(1, 1, 1, 'titel', NULL, 1, 'Titel', '', '', NULL, 12, 1)");
+      db_query("INSERT INTO {cdb_feld} VALUES(2, 1, 1, 'vorname', NULL, 1, 'Vorname', '', '&nbsp;', NULL, 30, 2)");
+      db_query("INSERT INTO {cdb_feld} VALUES(3, 1, 1, 'name', NULL, 1, 'Name', '', '<br/>', NULL, 30, 3)");
+      db_query("INSERT INTO {cdb_feld} VALUES(4, 1, 1, 'strasse', NULL, 1, 'Strasse', '', '<br/>', 'ViewAllDetailsOrPersonLeader', 30, 4)");
+      db_query("INSERT INTO {cdb_feld} VALUES(5, 1, 1, 'zusatz', NULL, 1, 'Addresszusatz', '', '<br/>', 'ViewAllDetailsOrPersonLeader', 30, 5)");
+      db_query("INSERT INTO {cdb_feld} VALUES(6, 1, 1, 'plz', NULL, 1, 'Postleitzahl', '', '&nbsp;', NULL, 6, 6)");
+      db_query("INSERT INTO {cdb_feld} VALUES(7, 1, 1, 'ort', NULL, 1, 'Ort', '', '<br/>', NULL, 40, 7)");
+      db_query("INSERT INTO {cdb_feld} VALUES(8, 1, 1, 'land', NULL, 1, 'Land', '', '<br/><br/>', NULL, 30, 8)");
+      db_query("INSERT INTO {cdb_feld} VALUES(9, 1, 2, 'geschlecht_no', 'sex', 1, 'Geschlecht', 'Geschlecht', '<br/>', NULL, 11, 9)");
+      db_query("INSERT INTO {cdb_feld} VALUES(10, 1, 1, 'telefonprivat', NULL, 1, 'Telefon privat', 'Tel. privat', '<br/>', NULL, 30, 10)");
+      db_query("INSERT INTO {cdb_feld} VALUES(11, 1, 1, 'telefongeschaeftlich', NULL, 1, 'Telefon gesch&auml;ftl.', 'Tel. gesch&auml;ft.', '<br/>', NULL, 20, 11)");
+      db_query("INSERT INTO {cdb_feld} VALUES(12, 1, 1, 'telefonhandy', NULL, 1, 'Mobil', 'Mobil', '<br/>', NULL, 20, 12)");
+      db_query("INSERT INTO {cdb_feld} VALUES(13, 1, 1, 'fax', NULL, 1, 'Fax', 'Fax', '<br/>', NULL, 20, 13)");
+      db_query("INSERT INTO {cdb_feld} VALUES(14, 1, 1, 'email', NULL, 1, 'E-Mail', 'E-Mail', '<br/>', NULL, 50, 14)");
+      db_query("INSERT INTO {cdb_feld} VALUES(15, 1, 1, 'cmsuserid', NULL, 1, 'Benutzername', 'Benutzername', '<br/>', NULL, 50, 15)");
+      db_query("INSERT INTO {cdb_feld} VALUES(16, 2, 3, 'geburtsdatum', NULL, 1, 'Geburtsdatum', 'Geburtsdatum', '<br/>', NULL, 0, 1)");
+      db_query("INSERT INTO {cdb_feld} VALUES(17, 2, 1, 'geburtsname', NULL, 1, 'Geburtsname', 'Geburtsname', '<br/>', NULL, 30, 2)");
+      db_query("INSERT INTO {cdb_feld} VALUES(18, 2, 1, 'geburtsort', NULL, 1, 'Geburtsort', 'Geburtsort', '<br/>', NULL, 30, 3)");
+      db_query("INSERT INTO {cdb_feld} VALUES(19, 2, 1, 'beruf', NULL, 1, 'Beruf', 'Beruf', '<br/>', NULL, 50, 4)");
+      db_query("INSERT INTO {cdb_feld} VALUES(20, 2, 1, 'nationalitaet_id', 'nationalitaet', 2, 'Nationalit&auml;t', 'Nationalit&auml;t', '<br/>', NULL, 11, 5)");
+      db_query("INSERT INTO {cdb_feld} VALUES(21, 2, 2, 'familienstand_no', 'familyStatus', 1, 'Familenstand', 'Familenstand', '<br/>', NULL, 11, 6)");
+      db_query("INSERT INTO {cdb_feld} VALUES(22, 2, 3, 'hochzeitsdatum', NULL, 1, 'Hochzeitstag', 'Hochzeitstag', '<br/><br/>', NULL, 0, 7)");
+      db_query("INSERT INTO {cdb_feld} VALUES(23, 2, 3, 'erstkontakt', NULL, 1, 'Erstkontakt', 'Erstkontakt', '<br/>', NULL, 0, 8)");
+      db_query("INSERT INTO {cdb_feld} VALUES(24, 2, 3, 'zugehoerig', NULL, 1, 'Zugeh&ouml;rig', 'Zugeh&ouml;rig', '<br/>', NULL, 0, 9)");
+      db_query("INSERT INTO {cdb_feld} VALUES(25, 2, 3, 'eintrittsdatum', NULL, 1, 'Mitglied seit', 'Mitglied seit', '<br/>', NULL, 0, 10)");
+      db_query("INSERT INTO {cdb_feld} VALUES(26, 2, 1, 'ueberweisen von', NULL, 1, '&Uuml;berwiesen von', '&Uuml;berwiesen von', '<br/>', NULL, 30, 11)");
+      db_query("INSERT INTO {cdb_feld} VALUES(27, 2, 3, 'austrittsdatum', NULL, 1, 'Mitglied bis', 'Mitglied bis', '<br/>', NULL, 0, 12)");
+      db_query("INSERT INTO {cdb_feld} VALUES(28, 2, 1, 'ueberwiesen nach', NULL, 1, '&Uuml;berwiesen nach', '&Uuml;berwiesen nach', '<br/><br/>', NULL, 30, 13)");
+      db_query("INSERT INTO {cdb_feld} VALUES(29, 2, 3, 'taufdatum', NULL, 1, 'Taufdatum', 'Taufdatum', '<br/>', NULL, 0, 14)");
+      db_query("INSERT INTO {cdb_feld} VALUES(30, 2, 1, 'taufort', NULL, 1, 'Taufort', '', '<br/>', NULL, 50, 15)");
+      db_query("INSERT INTO {cdb_feld} VALUES(31, 2, 1, 'getauftdurch', NULL, 1, 'Getauft durch', 'Getauft durch', '<br/>', NULL, 50, 16)");
+      db_query("INSERT INTO {cdb_feld} VALUES(32, 3, 2, 'status_id', 'status', 1, 'Status', 'Status', '<br/>', NULL, 11, 1)");
+      db_query("INSERT INTO {cdb_feld} VALUES(33, 3, 2, 'station_id', 'station', 1, 'Station', 'Station', '<br/>', NULL, 11, 2)");
+      db_query("INSERT INTO {cdb_feld} VALUES(34, 4, 1, 'bezeichnung', NULL, 1, 'Bezeichnung', 'Bezeichnung', '<br/>', NULL, 35, 1)");
+      db_query("INSERT INTO {cdb_feld} VALUES(35, 4, 2, 'distrikt_id', 'districts', 1, 'Distrikt', 'Distrikt', '<br/>', 'admingroups', 11, 2)");
+      db_query("INSERT INTO {cdb_feld} VALUES(36, 4, 2, 'followup_typ_id', 'followupTypes', 1, 'Followup-Typ', 'Followup-Typ', '<br/>', 'admingroups', 11, 3)");
+      db_query("INSERT INTO {cdb_feld} VALUES(37, 4, 2, 'fu_nachfolge_typ_id', 'FUNachfolgeDomains', 1, 'Followup-Nachfolger', 'Followup-Nachfolger', '<br/>', 'admingroups', 11, 4)");
+      db_query("INSERT INTO {cdb_feld} VALUES(38, 4, 2, 'fu_nachfolge_objekt_id', 'code:selectNachfolgeObjektId', 1, 'Followup-Nachfolger-Auswahl', 'Followup-Nachfolger-Auswahl', '<br/>', 'admingroups', 11, 5)");
+      db_query("INSERT INTO {cdb_feld} VALUES(39, 4, 3, 'gruendungsdatum', NULL, 1, 'Gr&uuml;ndungsdatum', 'Gr&uuml;ndungsdatum', '<br/>', NULL, 0, 6)");
+      db_query("INSERT INTO {cdb_feld} VALUES(40, 4, 3, 'abschlussdatum', NULL, 1, 'Abschlussdatum', 'Abschlussdatum', '<br/>', NULL, 0, 7)");
+      db_query("INSERT INTO {cdb_feld} VALUES(41, 4, 1, 'treffzeit', NULL, 1, 'Zeit des Treffens', 'Treffzeit', '<br/>', NULL, 30, 8)");
+      db_query("INSERT INTO {cdb_feld} VALUES(42, 4, 1, 'treffpunkt', NULL, 1, 'Ort des Treffens', 'Treffort', '<br/>', NULL, 50, 9)");
+      db_query("INSERT INTO {cdb_feld} VALUES(43, 4, 1, 'treffname', NULL, 1, 'Treffen bei', 'Treffen bei', '<br/>', NULL, 30, 10)");
+      db_query("INSERT INTO {cdb_feld} VALUES(44, 4, 1, 'zielgruppe', NULL, 1, 'Zielgruppe', 'Zielgruppe', '<br/>', NULL, 30, 11)");
+      db_query("INSERT INTO {cdb_feld} VALUES(45, 4, 5, 'notiz', NULL, 1, 'Notiz', 'Notiz', '<br/>', NULL, 200, 12)");
+      db_query("INSERT INTO {cdb_feld} VALUES(46, 4, 4, 'valid_yn', NULL, 1, '<p>Gruppe ausw&auml;hlbar<br/><small>Bei Verneinung kann die Gruppe nicht mehr zugeordnet und gefiltert werden</small>', 'Ausw&auml;hlbar', '<br/>', 'admingroups', 1, 13)");
+      db_query("INSERT INTO {cdb_feld} VALUES(47, 4, 4, 'versteckt_yn', NULL, 1, '<p>Versteckte Gruppe<br/><small>Gruppe ist nur f&uuml;r Gruppenadmins & Leiter sichbar</small>', 'Versteckt', '<br/>', 'admingroups', 1, 14)");
+      db_query("INSERT INTO {cdb_feld} VALUES(48, 4, 4, 'instatistik_yn', NULL, 1, '<p>Zeige in Statistik<br/><small>In der Statistik explizit aufgef&uuml;hrt</small>', 'In Statistik', '<br/>', 'admingroups', 1, 15)");
+      db_query("INSERT INTO {cdb_feld} VALUES(49, 4, 4, 'treffen_yn', NULL, 1, '<p>W&ouml;chentliche Teilnahme pflegen<br/><small>Erm&ouml;glicht die Pflege der Teilnahme an dieser Gruppe</small>', 'Teilnahme', '<br/>', 'admingroups', 1, 16)");
+      db_query("INSERT INTO {cdb_feld} VALUES(50, 1, 1, 'optigem_nr', NULL, 1, 'Optigem-Nr', 'Optigem-Nr.', '<br/>', 'admin', NULL, 16)");
+        
+      db_query("CREATE TABLE {cdb_nationalitaet} (
+        id int(11) NOT NULL,
+        bezeichnung varchar(50) not null,
+        PRIMARY KEY (id)
+      )");
       
       db_query("INSERT INTO {cdb_nationalitaet} VALUES(0, 'unbekannt')");
-      
-      // Add existing nationality values to new table
-     db_query("ALTER TABLE {cdb_nationalitaet} CHANGE  id id INT( 11 ) NOT NULL AUTO_INCREMENT");
-     db_query("insert into {cdb_nationalitaet} (bezeichnung) (select nationalitaet from {cdb_gemeindeperson} gp left join {cdb_nationalitaet} n on (gp.nationalitaet=n.bezeichnung) where n.bezeichnung is null and gp.nationalitaet!=''
-    group by nationalitaet)");
-      
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('&Auml;gypten')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('&Auml;quatorialguinea')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('&Auml;thiopien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Afghanistan')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Albanien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Algerien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Andorra')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Angola')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Antigua und Barbuda')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Argentinien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Armenien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Aserbaidschan')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Australien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Bahamas')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Bahrain')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Bangladesch')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Barbados')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Belgien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Belize')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Benin')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Bhutan')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Bolivien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Bosnien und Herzegowina')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Botsuana')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Brasilien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Brunei')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Bulgarien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Burkina Faso')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Burundi')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Chile')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('China')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Costa Rica')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('D&auml;nemark')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Deutschland')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Dominica')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Dominikanische Republik')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Dschibuti')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Ecuador')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('El Salvador')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Elfenbeink&uuml;ste')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Eritrea')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Estland')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Fidschi')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Finnland')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Frankreich')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Gabun')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Gambia')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Georgien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Ghana')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Grenada')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Griechenland')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Gro&szlig;britannien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Guatemala')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Guinea')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Guinea-Bissau')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Guyana')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Haiti')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Honduras')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Indien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Indonesien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Irak')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Iran')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Irland')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Island')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Israel')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Italien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Jamaika')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Japan')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Jemen')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Jordanien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kambodscha')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kamerun')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kanada')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kap Verde')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kasachstan')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Katar')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kenia')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kirgistan')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kiribati')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kolumbien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Komoren')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kongo, Republik')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kongo, Demokratische Republik')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kroatien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kuba')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kuwait')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Laos')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Lesotho')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Lettland')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Libanon')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Liberia')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Libyen')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Liechtenstein')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Litauen')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Luxemburg')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Madagaskar')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Malawi')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Malaysia')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Malediven')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mali')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Malta')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Marokko')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Marshallinseln')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mauretanien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mauritius')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mazedonien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mexiko')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mikronesien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Moldawien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Monaco')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mongolei')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Montenegro')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mosambik')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Myanmar')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Namibia')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Nauru')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Nepal')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Neuseeland')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Nicaragua')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Niederlande')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Niger')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Nigeria')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Niue')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Nordkorea')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Norwegen')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('&Ouml;sterreich')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Oman')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Pakistan')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Palau')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Pal&auml;stinensische Gebiete')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Panama')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Papua-Neuguinea')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Paraguay')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Peru')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Philippinen')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Polen')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Portugal')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Ruanda')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Rum&auml;nien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Russland')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Sahara')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Salomonen')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Sambia')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Samoa')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('San Marino')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('S&atilde;o Tom&eacute; und Pr&iacute;ncipe')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Saudi-Arabien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Schweden')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Schweiz')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Senegal')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Serbien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Seychellen')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Sierra Leone')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Simbabwe')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Singapur')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Slowakei')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Slowenien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Somalia')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Spanien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Sri Lanka')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('St. Kitts und Nevis')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('St. Lucia')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('St. Vincent und die Grenadinen')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Sudan')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('S&uuml;dafrika')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('S&uuml;dkorea')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Suriname')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Swasiland')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Syrien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Tadschikistan')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Taiwan')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Tansania')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Thailand')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Timor-Leste')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Togo')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Tonga')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Trinidad und Tobago')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Tschad')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Tschechien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Tunesien')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Turkmenistan')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Turks- und Caicosinseln')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Tuvalu')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('T&uuml;rkei')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Uganda')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Ukraine')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Ungarn')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Uruguay')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('USA')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Usbekistan')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Vanuatu')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Vatikanstadt')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Venezuela')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Vereinigte Arabische Emirate')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Vietnam')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Wei&szlig;russland')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Zentralafrikanische Republik')");
-    db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Zypern')");
     
-     
-     db_query("ALTER TABLE {cdb_gemeindeperson} ADD nationalitaet_id INT( 11 ) NOT NULL AFTER nationalitaet");
-     // Mappe nun die schon gesetzen
-    db_query("update {cdb_gemeindeperson} gp join {cdb_nationalitaet} n on gp.nationalitaet=n.bezeichnung
-    set gp.nationalitaet_id=n.id");
+      // Add existing nationality values to new table
+      db_query("ALTER TABLE {cdb_nationalitaet} CHANGE  id id INT( 11 ) NOT NULL AUTO_INCREMENT");
+      db_query("insert into {cdb_nationalitaet} (bezeichnung) (select nationalitaet from {cdb_gemeindeperson} gp left join {cdb_nationalitaet} n on (gp.nationalitaet=n.bezeichnung) where n.bezeichnung is null and gp.nationalitaet!='' group by nationalitaet)");
+          
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('&Auml;gypten')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('&Auml;quatorialguinea')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('&Auml;thiopien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Afghanistan')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Albanien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Algerien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Andorra')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Angola')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Antigua und Barbuda')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Argentinien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Armenien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Aserbaidschan')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Australien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Bahamas')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Bahrain')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Bangladesch')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Barbados')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Belgien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Belize')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Benin')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Bhutan')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Bolivien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Bosnien und Herzegowina')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Botsuana')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Brasilien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Brunei')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Bulgarien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Burkina Faso')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Burundi')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Chile')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('China')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Costa Rica')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('D&auml;nemark')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Deutschland')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Dominica')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Dominikanische Republik')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Dschibuti')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Ecuador')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('El Salvador')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Elfenbeink&uuml;ste')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Eritrea')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Estland')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Fidschi')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Finnland')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Frankreich')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Gabun')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Gambia')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Georgien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Ghana')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Grenada')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Griechenland')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Gro&szlig;britannien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Guatemala')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Guinea')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Guinea-Bissau')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Guyana')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Haiti')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Honduras')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Indien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Indonesien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Irak')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Iran')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Irland')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Island')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Israel')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Italien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Jamaika')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Japan')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Jemen')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Jordanien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kambodscha')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kamerun')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kanada')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kap Verde')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kasachstan')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Katar')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kenia')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kirgistan')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kiribati')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kolumbien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Komoren')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kongo, Republik')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kongo, Demokratische Republik')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kroatien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kuba')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Kuwait')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Laos')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Lesotho')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Lettland')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Libanon')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Liberia')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Libyen')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Liechtenstein')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Litauen')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Luxemburg')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Madagaskar')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Malawi')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Malaysia')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Malediven')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mali')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Malta')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Marokko')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Marshallinseln')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mauretanien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mauritius')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mazedonien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mexiko')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mikronesien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Moldawien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Monaco')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mongolei')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Montenegro')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Mosambik')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Myanmar')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Namibia')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Nauru')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Nepal')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Neuseeland')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Nicaragua')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Niederlande')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Niger')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Nigeria')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Niue')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Nordkorea')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Norwegen')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('&Ouml;sterreich')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Oman')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Pakistan')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Palau')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Pal&auml;stinensische Gebiete')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Panama')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Papua-Neuguinea')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Paraguay')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Peru')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Philippinen')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Polen')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Portugal')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Ruanda')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Rum&auml;nien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Russland')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Sahara')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Salomonen')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Sambia')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Samoa')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('San Marino')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('S&atilde;o Tom&eacute; und Pr&iacute;ncipe')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Saudi-Arabien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Schweden')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Schweiz')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Senegal')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Serbien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Seychellen')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Sierra Leone')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Simbabwe')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Singapur')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Slowakei')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Slowenien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Somalia')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Spanien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Sri Lanka')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('St. Kitts und Nevis')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('St. Lucia')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('St. Vincent und die Grenadinen')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Sudan')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('S&uuml;dafrika')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('S&uuml;dkorea')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Suriname')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Swasiland')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Syrien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Tadschikistan')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Taiwan')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Tansania')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Thailand')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Timor-Leste')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Togo')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Tonga')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Trinidad und Tobago')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Tschad')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Tschechien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Tunesien')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Turkmenistan')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Turks- und Caicosinseln')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Tuvalu')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('T&uuml;rkei')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Uganda')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Ukraine')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Ungarn')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Uruguay')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('USA')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Usbekistan')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Vanuatu')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Vatikanstadt')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Venezuela')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Vereinigte Arabische Emirate')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Vietnam')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Wei&szlig;russland')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Zentralafrikanische Republik')");
+      db_query("INSERT INTO {cdb_nationalitaet} (bezeichnung) VALUES('Zypern')");
+      
+       
+      db_query("ALTER TABLE {cdb_gemeindeperson} ADD nationalitaet_id INT( 11 ) NOT NULL AFTER nationalitaet");
+      // Mappe nun die schon gesetzen
+      db_query("update {cdb_gemeindeperson} gp join {cdb_nationalitaet} n on gp.nationalitaet=n.bezeichnung set gp.nationalitaet_id=n.id");
     
       db_query("insert into {cc_config} values ('show_remember_me', '1')");
     
@@ -1256,13 +1261,12 @@ function run_db_updates($db_version) {
       db_query("ALTER TABLE {cc_session} ADD PRIMARY KEY (person_id , session , hostname)") ;
       
       db_query("CREATE TABLE {cdb_gruppenteilnehmerstatus} (
-      id int(11) NOT NULL,
-      intern_code int(1) NOT NULL,
-      bezeichnung varchar(50) NOT NULL,
-      kuerzel varchar(10) NOT NULL,
-      PRIMARY KEY (id),
-      UNIQUE KEY intern_code (intern_code)
-    ) DEFAULT CHARSET=utf8");
+        id int(11) NOT NULL,
+        intern_code int(1) NOT NULL,
+        bezeichnung varchar(50) NOT NULL,
+        kuerzel varchar(10) NOT NULL,
+        PRIMARY KEY (id),
+        UNIQUE KEY intern_code (intern_code)) DEFAULT CHARSET=utf8");
     
       db_query("INSERT INTO {cdb_gruppenteilnehmerstatus} VALUES(1, 0, 'Teilnehmer', '')");
       db_query("INSERT INTO {cdb_gruppenteilnehmerstatus} VALUES(2, 1, 'Leiter', 'L')");
@@ -1398,8 +1402,7 @@ function run_db_updates($db_version) {
       modified_date datetime NOT NULL,
       modified_pid int(11) NOT NULL,  
       PRIMARY KEY (id),
-      UNIQUE KEY bezeichnung (bezeichnung,ort)
-    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ");
+      UNIQUE KEY bezeichnung (bezeichnung,ort)) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ");
       
       db_query("CREATE TABLE {cc_printer_queue} (
        id int(11) NOT NULL AUTO_INCREMENT,
@@ -1407,8 +1410,7 @@ function run_db_updates($db_version) {
         data blob NOT NULL,
         modified_date datetime NOT NULL,
         modified_pid int(11) NOT NULL,
-        PRIMARY KEY (id)
-    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8");
+        PRIMARY KEY (id)) ENGINE=InnoDB  DEFAULT CHARSET=utf8");
         
       
       db_query("ALTER TABLE {cdb_gruppe} ADD mail_an_leiter_yn INT( 1 ) NOT NULL DEFAULT  '1' AFTER instatistik_yn");
@@ -1426,8 +1428,7 @@ function run_db_updates($db_version) {
       optin_yn int(1) NOT NULL DEFAULT '1',
       goodbye_yn int(1) NOT NULL DEFAULT '0',
       notifyunsubscribe_yn int(1) NOT NULL DEFAULT '0',
-      PRIMARY KEY (gruppe_id,mailchimp_list_id)
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+      PRIMARY KEY (gruppe_id,mailchimp_list_id)) ENGINE=InnoDB DEFAULT CHARSET=utf8");
     
     
       db_query("CREATE TABLE {cdb_gruppe_mailchimp_person} (
@@ -1435,8 +1436,7 @@ function run_db_updates($db_version) {
       mailchimp_list_id varchar(20) NOT NULL,
       person_id int(11) NOT NULL,
       email varchar(50) NOT NULL,
-      PRIMARY KEY (gruppe_id,mailchimp_list_id,person_id)
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+      PRIMARY KEY (gruppe_id,mailchimp_list_id,person_id)) ENGINE=InnoDB DEFAULT CHARSET=utf8");
     
       db_query("insert into {cc_config} values ('churchdb_mailchimp_apikey', '')");
       db_query("ALTER TABLE {cdb_gruppentreffen} ADD anzahl_gaeste INT( 11 ) NULL AFTER ausgefallen_yn");
@@ -1517,12 +1517,13 @@ function run_db_updates($db_version) {
         privat_yn int(1) not null default 0,
         modified_date datetime NOT NULL,
         modified_pid int(11) NOT NULL,
-      PRIMARY KEY (id),
-      UNIQUE KEY bezeichnung_per_user (bezeichnung,modified_pid)
-      ) ENGINE=InnoDB  DEFAULT CHARSET=utf8");
+        PRIMARY KEY (id),
+        UNIQUE KEY bezeichnung_per_user (bezeichnung,modified_pid)
+        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8");
       db_query("insert into {cc_calcategory} (select null, bezeichnung, sortkey, color, 1, 0, current_date(), -1 from {cs_category})");
       db_query("ALTER TABLE {cc_cal} CHANGE category_id  old_category_id INT( 11 ) NOT NULL DEFAULT 0");
       db_query("ALTER TABLE {cc_cal} ADD category_id INT( 11 ) NOT NULL AFTER old_category_id");
+      
       $db=db_query("select cal.id cal_id, cs.id cs_id from {cc_calcategory} cal, {cs_category} cs where cal.bezeichnung=cs.bezeichnung");
       // adapt IDs since auto_increment is used now
       if ($db!=null)
@@ -1548,25 +1549,25 @@ function run_db_updates($db_version) {
         modified_pid int(11) NOT NULL,
         PRIMARY KEY (id),
         UNIQUE KEY domain_type (domain_type,domain_id)
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ");
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ");
       set_version("2.34");
     
     case '2.34':
       db_query("CREATE TABLE {cc_mail_queue} (
-      id int(11) NOT NULL AUTO_INCREMENT,
-      receiver varchar(255) NOT NULL,
-      sender varchar(255) NOT NULL,
-      subject varchar(255) NOT NULL,
-      body blob NOT NULL,
-      htmlmail_yn int(1) NOT NULL,
-      priority int(1) NOT NULL DEFAULT '2',
-      modified_date datetime NOT NULL,
-      modified_pid int(11) NOT NULL,
-      send_date datetime DEFAULT NULL,
-      error int(11) DEFAULT '0',
-      reading_count int(11) NOT NULL DEFAULT '0',
-      PRIMARY KEY (id)
-    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0 ");
+        id int(11) NOT NULL AUTO_INCREMENT,
+        receiver varchar(255) NOT NULL,
+        sender varchar(255) NOT NULL,
+        subject varchar(255) NOT NULL,
+        body blob NOT NULL,
+        htmlmail_yn int(1) NOT NULL,
+        priority int(1) NOT NULL DEFAULT '2',
+        modified_date datetime NOT NULL,
+        modified_pid int(11) NOT NULL,
+        send_date datetime DEFAULT NULL,
+        error int(11) DEFAULT '0',
+        reading_count int(11) NOT NULL DEFAULT '0',
+        PRIMARY KEY (id)
+        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0 ");
       
       db_query("ALTER TABLE {cdb_gruppe} CHANGE bezeichnung bezeichnung VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL");  
       db_query("ALTER TABLE {cdb_log} CHANGE txt txt VARCHAR( 2048 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL");
@@ -1639,44 +1640,44 @@ function run_db_updates($db_version) {
     
       // Add tables for agenda in CS module
       db_query("CREATE TABLE {cs_agenda} (
-      id int(11) NOT NULL AUTO_INCREMENT,
-      calcategory_id int(11) NOT NULL,
-      bezeichnung varchar(100) NOT NULL,
-      template_yn int(1) NOT NULL DEFAULT '0',
-      series varchar(100) DEFAULT NULL,
-      modified_date datetime NOT NULL,
-      modified_pid int(11) NOT NULL,
-      PRIMARY KEY (id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
+        id int(11) NOT NULL AUTO_INCREMENT,
+        calcategory_id int(11) NOT NULL,
+        bezeichnung varchar(100) NOT NULL,
+        template_yn int(1) NOT NULL DEFAULT '0',
+        series varchar(100) DEFAULT NULL,
+        modified_date datetime NOT NULL,
+        modified_pid int(11) NOT NULL,
+        PRIMARY KEY (id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
       
       db_query("CREATE TABLE {cs_item} (
-      id int(11) NOT NULL AUTO_INCREMENT,
-      agenda_id int(11) NOT NULL,
-      bezeichnung varchar(100) NOT NULL,
-      header_yn int(1) NOT NULL DEFAULT '0',
-      responsible varchar(100) NOT NULL,
-      arrangement_id int(11) DEFAULT NULL,
-      note varchar(255) NOT NULL,
-      sortkey int(11) NOT NULL,
-      duration int(11) NOT NULL,
-      preservice_yn int(1) NOT NULL DEFAULT '0',
-      modified_date datetime NOT NULL,
-      modified_pid int(11) NOT NULL,
-      PRIMARY KEY (id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
+        id int(11) NOT NULL AUTO_INCREMENT,
+        agenda_id int(11) NOT NULL,
+        bezeichnung varchar(100) NOT NULL,
+        header_yn int(1) NOT NULL DEFAULT '0',
+        responsible varchar(100) NOT NULL,
+        arrangement_id int(11) DEFAULT NULL,
+        note varchar(255) NOT NULL,
+        sortkey int(11) NOT NULL,
+        duration int(11) NOT NULL,
+        preservice_yn int(1) NOT NULL DEFAULT '0',
+        modified_date datetime NOT NULL,
+        modified_pid int(11) NOT NULL,
+        PRIMARY KEY (id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
       
       db_query("CREATE TABLE {cs_event_item} (
-      event_id int(11) NOT NULL,
-      item_id int(11) NOT NULL,
-      PRIMARY KEY (event_id,item_id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+        event_id int(11) NOT NULL,
+        item_id int(11) NOT NULL,
+        PRIMARY KEY (event_id,item_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
     
       db_query("CREATE TABLE {cs_item_servicegroup} (
-      item_id int(11) NOT NULL,
-      servicegroup_id int(11) NOT NULL,
-      note varchar(255) NOT NULL,
-      PRIMARY KEY (item_id,servicegroup_id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+        item_id int(11) NOT NULL,
+        servicegroup_id int(11) NOT NULL,
+        note varchar(255) NOT NULL,
+        PRIMARY KEY (item_id,servicegroup_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
       set_version("2.41");
 
     case '2.41':
@@ -1723,11 +1724,10 @@ function run_db_updates($db_version) {
       db_query("INSERT INTO {cdb_feldkategorie} (id , bezeichnung , intern_code , db_tabelle , id_name)
       VALUES ( '5',  'Bereich',  'f_dep',  'cdb_bereich',  'id');");      
       db_query("INSERT INTO  {cdb_feld} (id, feldkategorie_id , feldtyp_id , db_spalte , 
-         db_stammdatentabelle , aktiv_yn , inneuerstellen_yn , langtext , kurztext , zeilenende , 
-         autorisierung , laenge , sortkey )
-         VALUES (
-         NULL ,  '5',  '2',  'bereich_id',  'dep',  '1',  '0',  'Bereich',  'Bereich',  '<br/>', NULL , NULL , 1
-      )");    
+        db_stammdatentabelle , aktiv_yn , inneuerstellen_yn , langtext , kurztext , zeilenende , 
+        autorisierung , laenge , sortkey )
+        VALUES (NULL ,  '5',  '2',  'bereich_id',  'dep',  '1',  '0',  'Bereich',  'Bereich',  '<br/>', NULL , NULL , 1
+       )");    
       set_version("2.46");
       
     case '2.46':
@@ -1735,21 +1735,21 @@ function run_db_updates($db_version) {
       db_query("UPDATE {cdb_feld} set autorisierung='viewalldetails || leader' where autorisierung='ViewAllDetailsOrPersonLeader'");      
       
       db_query("CREATE TABLE {cc_notification} (
-          id int(11) NOT NULL AUTO_INCREMENT,
-          domain_type varchar(20) NOT NULL,
-          domain_id int(11) NOT NULL,
-          person_id int(11) NOT NULL,
-          notificationtype_id int(11) NOT NULL,
-          lastsenddate datetime DEFAULT NULL,
-          PRIMARY KEY (id),
-          UNIQUE KEY domain_type (domain_type,domain_id,person_id)
+        id int(11) NOT NULL AUTO_INCREMENT,
+        domain_type varchar(20) NOT NULL,
+        domain_id int(11) NOT NULL,
+        person_id int(11) NOT NULL,
+        notificationtype_id int(11) NOT NULL,
+        lastsenddate datetime DEFAULT NULL,
+        PRIMARY KEY (id),
+        UNIQUE KEY domain_type (domain_type,domain_id,person_id)
         ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ");
       
       db_query("CREATE TABLE {cc_notificationtype} (
-          id int(11) NOT NULL AUTO_INCREMENT,
-          bezeichnung varchar(40) NOT NULL,
-          delay_hours int(11) NOT NULL,
-          PRIMARY KEY (id)
+        id int(11) NOT NULL AUTO_INCREMENT,
+        bezeichnung varchar(40) NOT NULL,
+        delay_hours int(11) NOT NULL,
+        PRIMARY KEY (id)
         ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
       
       db_query("INSERT INTO {cc_notificationtype} (bezeichnung, delay_hours) VALUES
@@ -1760,15 +1760,15 @@ function run_db_updates($db_version) {
         ");
       
       db_query("CREATE TABLE {cc_meetingrequest} (
-          id int(11) NOT NULL AUTO_INCREMENT,
-          cal_id int(11) NOT NULL,
-          person_id int(11) NOT NULL,
-          event_date datetime NOT NULL,
-          zugesagt_yn int(1) DEFAULT NULL,
-          mailsend_date datetime DEFAULT NULL,
-          response_date datetime DEFAULT NULL,
-          PRIMARY KEY (id),
-          UNIQUE KEY cal_id (cal_id,person_id,event_date)
+        id int(11) NOT NULL AUTO_INCREMENT,
+        cal_id int(11) NOT NULL,
+        person_id int(11) NOT NULL,
+        event_date datetime NOT NULL,
+        zugesagt_yn int(1) DEFAULT NULL,
+        mailsend_date datetime DEFAULT NULL,
+        response_date datetime DEFAULT NULL,
+        PRIMARY KEY (id),
+        UNIQUE KEY cal_id (cal_id,person_id,event_date)
         ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
       
       // Fix bug when person_id differs from id
@@ -1794,7 +1794,7 @@ function run_db_updates($db_version) {
         newperson_count int(11) NOT NULL,
         count int(11) NOT NULL,
         PRIMARY KEY (date,status_id,station_id)
-      ) ENGINE=MyISAM DEFAULT CHARSET=utf8");
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8");
       
       db_query("CREATE TABLE {crp_group} (
         date date NOT NULL,
@@ -1805,7 +1805,7 @@ function run_db_updates($db_version) {
         newperson_count int(11) NOT NULL,
         count int(11) NOT NULL,
         PRIMARY KEY (date,gruppe_id,status_id,station_id,gruppenteilnehmerstatus_id)
-      ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
       
       set_version("2.48");
       
@@ -1823,43 +1823,43 @@ function run_db_updates($db_version) {
       set_version("2.49");
   	 
   	case "2.49":
-	    db_query("insert into {cc_config} values('invite_email_text', 'Du wurdest zur Nutzung von %sitename eingeladen.\n\n".
-                             "Klicke auf die folgende Schaltfläche, um Dich direkt dort anzumelden und um Dein Passwort zu wählen:')");
-	    db_query("ALTER TABLE {cs_event} DROP old_category_id");
-	    db_query("ALTER TABLE {cs_event} DROP old_bezeichnung");
-	    db_query("ALTER TABLE {cr_resource} DROP adminmails_old");
-	    db_query("ALTER TABLE {cs_event} ADD valid_yn INT( 1 ) NOT NULL DEFAULT  '1' AFTER startdate");
+    db_query("insert into {cc_config} values('invite_email_text', 'Du wurdest zur Nutzung von %sitename eingeladen.\n\n".
+                           "Klicke auf die folgende Schaltfläche, um Dich direkt dort anzumelden und um Dein Passwort zu wählen:')");
+    db_query("ALTER TABLE {cs_event} DROP old_category_id");
+    db_query("ALTER TABLE {cs_event} DROP old_bezeichnung");
+    db_query("ALTER TABLE {cr_resource} DROP adminmails_old");
+    db_query("ALTER TABLE {cs_event} ADD valid_yn INT( 1 ) NOT NULL DEFAULT  '1' AFTER startdate");
 
-	    // Report
-	    db_query("CREATE TABLE {crp_report} (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  query_id int(11) NOT NULL,
-  bezeichnung varchar(50) NOT NULL,
-  sortkey int(11) NOT NULL DEFAULT '0',
-  rows varchar(255) NOT NULL,
-  cols varchar(255) NOT NULL,
-  aggregatorName varchar(255) DEFAULT NULL,
-  PRIMARY KEY (id)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5");
+    // Report
+    db_query("CREATE TABLE {crp_report} (
+      id int(11) NOT NULL AUTO_INCREMENT,
+      query_id int(11) NOT NULL,
+      bezeichnung varchar(50) NOT NULL,
+      sortkey int(11) NOT NULL DEFAULT '0',
+      rows varchar(255) NOT NULL,
+      cols varchar(255) NOT NULL,
+      aggregatorName varchar(255) DEFAULT NULL,
+      PRIMARY KEY (id)
+      ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5");
 	    
-  db_query("INSERT INTO {crp_report} (id, query_id, bezeichnung, sortkey, rows, cols, aggregatorName) VALUES
-    (1, 1, 'Anzahl Personen Gesamt', 10, 'Monat', 'Station,Mitglied', 'Anzahl Personen'),
-    (2, 1, 'Anzahl neuer Personen', 20, 'Monat', 'Station', 'Anzahl neuer Personen'),
-    (3, 2, 'Gruppentypen', 10, 'Datum', 'Gruppentyp', 'Anzahl Personen'),
-    (4, 3, 'Gruppen per Distrikt', 10, 'Datum', 'Distrikt,Mitglied', '');");
-	    
-  db_query("CREATE TABLE {crp_query} (
-    id int(11) NOT NULL AUTO_INCREMENT,
-    bezeichnung varchar(50) CHARACTER SET latin1 NOT NULL,
-    query_sql blob NOT NULL,
-    sortkey int(11) NOT NULL DEFAULT '0',
-    PRIMARY KEY (id)
-    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6");
-	    
-  db_query("INSERT INTO crp_query (id, bezeichnung, query_sql, sortkey) VALUES
-    (1, 'Personen', 0x73656c65637420702e6461746520446174756d2c207965617228702e6461746529204a6168722c20646174655f666f726d617428702e646174652c202725592d256d2729204d6f6e61742c0a2020202020202020732e62657a656963686e756e67205374617475732c200a202020202020202073742e62657a656963686e756e672053746174696f6e2c0a20202020202020202863617365207768656e20732e6d6974676c6965645f796e3d30207468656e20274b65696e204d6974676c6965642720656c736520274d6974676c6965642720656e6429206173204d6974676c6965642c200a2020202020202020702e6e6577706572736f6e5f636f756e742c20702e636f756e742061732027636f756e74272066726f6d206372705f706572736f6e2070200a2020202020202020202020202020206c656674206a6f696e206364625f7374617475732073206f6e2028732e69643d702e7374617475735f6964290a2020202020202020202020202020206c656674206a6f696e206364625f73746174696f6e207374206f6e202873742e69643d702e73746174696f6e5f696429, 10),
-    (2, 'Gruppen per Monat', 0x73656c65637420646174655f666f726d617428702e646174652c202725592d256d27292061732027446174756d272c0a20202020202020207965617228702e6461746529204a6168722c0a2020202020202020732e62657a656963686e756e67205374617475732c0a202020202020202073742e62657a656963686e756e672053746174696f6e2c0a2020202020202020672e62657a656963686e756e67204772757070652c0a2020202020202020642e62657a656963686e756e67204469737472696b742c0a202020202020202067742e62657a656963686e756e67204772757070656e7479702c0a20202020202020206774732e62657a656963686e756e67204772757070656e7465696c6e65686d65727374617475732c0a20202020202020202863617365207768656e20732e6d6974676c6965645f796e3d30207468656e20274b65696e204d6974676c6965642720656c736520274d6974676c6965642720656e642920617320204d6974676c6965642c0a202020202020202073756d28702e6e6577706572736f6e5f636f756e7429206e6577706572736f6e5f636f756e742c200a2020202020202020726f756e642873756d28702e636f756e74292f636f756e7428702e636f756e74292c302920617320636f756e740a202020202020202066726f6d206372705f67726f757020700a2020202020202020202020202020206c656674206a6f696e206364625f7374617475732073206f6e2028732e69643d702e7374617475735f6964290a2020202020202020202020202020206c656674206a6f696e206364625f6772757070652067206f6e2028672e69643d702e6772757070655f6964290a2020202020202020202020202020202020202020206c656674206a6f696e206364625f6772757070656e747970206774206f6e202867742e69643d672e6772757070656e7479705f69642920202020202020200a2020202020202020202020202020202020202020206c656674206a6f696e206364625f6469737472696b742064206f6e2028642e69643d672e6469737472696b745f69642920202020202020200a2020202020202020202020202020206c656674206a6f696e206364625f6772757070656e7465696c6e65686d657273746174757320677473206f6e20286774732e69643d702e6772757070656e7465696c6e65686d65727374617475735f6964290a2020202020202020202020202020206c656674206a6f696e206364625f73746174696f6e207374206f6e202873742e69643d702e73746174696f6e5f6964290a20202020202020202067726f757020627920446174756d2c205374617475732c2053746174696f6e2c204772757070652c204469737472696b742c204772757070656e7479702c204d6974676c6965642c204772757070656e7465696c6e65686d657273746174757309, 20),
-    (3, 'Aktuelle Gruppen pro Woche', 0x73656c65637420636f6e63617428274b5720272c7965617228702e64617465292c272d272c20646174655f666f726d617428702e646174652c2027257527292b31292061732027446174756d272c0a20202020202020207965617228702e6461746529204a6168722c0a2020202020202020732e62657a656963686e756e67205374617475732c0a202020202020202073742e62657a656963686e756e672053746174696f6e2c0a2020202020202020672e62657a656963686e756e67204772757070652c0a2020202020202020642e62657a656963686e756e67204469737472696b742c0a202020202020202067742e62657a656963686e756e67204772757070656e7479702c0a20202020202020206774732e62657a656963686e756e67204772757070656e7465696c6e65686d65727374617475732c0a20202020202020202863617365207768656e20732e6d6974676c6965645f796e3d30207468656e20274b65696e204d6974676c6965642720656c736520274d6974676c6965642720656e642920617320204d6974676c6965642c0a202020202020202073756d28702e6e6577706572736f6e5f636f756e7429206e6577706572736f6e5f636f756e742c200a2020202020202020726f756e642873756d28702e636f756e74292f636f756e7428702e636f756e74292c302920617320636f756e740a202020202020202066726f6d206372705f67726f757020700a2020202020202020202020202020206c656674206a6f696e206364625f7374617475732073206f6e2028732e69643d702e7374617475735f6964290a2020202020202020202020202020206c656674206a6f696e206364625f6772757070652067206f6e2028672e69643d702e6772757070655f6964290a2020202020202020202020202020202020202020206c656674206a6f696e206364625f6772757070656e747970206774206f6e202867742e69643d672e6772757070656e7479705f69642920202020202020200a2020202020202020202020202020202020202020206c656674206a6f696e206364625f6469737472696b742064206f6e2028642e69643d672e6469737472696b745f69642920202020202020200a2020202020202020202020202020206c656674206a6f696e206364625f6772757070656e7465696c6e65686d657273746174757320677473206f6e20286774732e69643d702e6772757070656e7465696c6e65686d65727374617475735f6964290a2020202020202020202020202020206c656674206a6f696e206364625f73746174696f6e207374206f6e202873742e69643d702e73746174696f6e5f6964290a2020202020202020207768657265206461746564696666286e6f7728292c20702e64617465293c372a380a20202020202020202067726f757020627920446174756d2c205374617475732c2053746174696f6e2c204772757070652c204469737472696b742c204772757070656e7479702c204d6974676c6965642c204772757070656e7465696c6e65686d6572737461747573090a202020202020202020, 30)");	    
+    db_query("INSERT INTO {crp_report} (id, query_id, bezeichnung, sortkey, rows, cols, aggregatorName) VALUES
+      (1, 1, 'Anzahl Personen Gesamt', 10, 'Monat', 'Station,Mitglied', 'Anzahl Personen'),
+      (2, 1, 'Anzahl neuer Personen', 20, 'Monat', 'Station', 'Anzahl neuer Personen'),
+      (3, 2, 'Gruppentypen', 10, 'Datum', 'Gruppentyp', 'Anzahl Personen'),
+      (4, 3, 'Gruppen per Distrikt', 10, 'Datum', 'Distrikt,Mitglied', '');");
+  	    
+    db_query("CREATE TABLE {crp_query} (
+      id int(11) NOT NULL AUTO_INCREMENT,
+      bezeichnung varchar(50) CHARACTER SET latin1 NOT NULL,
+      query_sql blob NOT NULL,
+      sortkey int(11) NOT NULL DEFAULT '0',
+      PRIMARY KEY (id)
+      ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6");
+  	    
+    db_query("INSERT INTO crp_query (id, bezeichnung, query_sql, sortkey) VALUES
+      (1, 'Personen', 0x73656c65637420702e6461746520446174756d2c207965617228702e6461746529204a6168722c20646174655f666f726d617428702e646174652c202725592d256d2729204d6f6e61742c0a2020202020202020732e62657a656963686e756e67205374617475732c200a202020202020202073742e62657a656963686e756e672053746174696f6e2c0a20202020202020202863617365207768656e20732e6d6974676c6965645f796e3d30207468656e20274b65696e204d6974676c6965642720656c736520274d6974676c6965642720656e6429206173204d6974676c6965642c200a2020202020202020702e6e6577706572736f6e5f636f756e742c20702e636f756e742061732027636f756e74272066726f6d206372705f706572736f6e2070200a2020202020202020202020202020206c656674206a6f696e206364625f7374617475732073206f6e2028732e69643d702e7374617475735f6964290a2020202020202020202020202020206c656674206a6f696e206364625f73746174696f6e207374206f6e202873742e69643d702e73746174696f6e5f696429, 10),
+      (2, 'Gruppen per Monat', 0x73656c65637420646174655f666f726d617428702e646174652c202725592d256d27292061732027446174756d272c0a20202020202020207965617228702e6461746529204a6168722c0a2020202020202020732e62657a656963686e756e67205374617475732c0a202020202020202073742e62657a656963686e756e672053746174696f6e2c0a2020202020202020672e62657a656963686e756e67204772757070652c0a2020202020202020642e62657a656963686e756e67204469737472696b742c0a202020202020202067742e62657a656963686e756e67204772757070656e7479702c0a20202020202020206774732e62657a656963686e756e67204772757070656e7465696c6e65686d65727374617475732c0a20202020202020202863617365207768656e20732e6d6974676c6965645f796e3d30207468656e20274b65696e204d6974676c6965642720656c736520274d6974676c6965642720656e642920617320204d6974676c6965642c0a202020202020202073756d28702e6e6577706572736f6e5f636f756e7429206e6577706572736f6e5f636f756e742c200a2020202020202020726f756e642873756d28702e636f756e74292f636f756e7428702e636f756e74292c302920617320636f756e740a202020202020202066726f6d206372705f67726f757020700a2020202020202020202020202020206c656674206a6f696e206364625f7374617475732073206f6e2028732e69643d702e7374617475735f6964290a2020202020202020202020202020206c656674206a6f696e206364625f6772757070652067206f6e2028672e69643d702e6772757070655f6964290a2020202020202020202020202020202020202020206c656674206a6f696e206364625f6772757070656e747970206774206f6e202867742e69643d672e6772757070656e7479705f69642920202020202020200a2020202020202020202020202020202020202020206c656674206a6f696e206364625f6469737472696b742064206f6e2028642e69643d672e6469737472696b745f69642920202020202020200a2020202020202020202020202020206c656674206a6f696e206364625f6772757070656e7465696c6e65686d657273746174757320677473206f6e20286774732e69643d702e6772757070656e7465696c6e65686d65727374617475735f6964290a2020202020202020202020202020206c656674206a6f696e206364625f73746174696f6e207374206f6e202873742e69643d702e73746174696f6e5f6964290a20202020202020202067726f757020627920446174756d2c205374617475732c2053746174696f6e2c204772757070652c204469737472696b742c204772757070656e7479702c204d6974676c6965642c204772757070656e7465696c6e65686d657273746174757309, 20),
+      (3, 'Aktuelle Gruppen pro Woche', 0x73656c65637420636f6e63617428274b5720272c7965617228702e64617465292c272d272c20646174655f666f726d617428702e646174652c2027257527292b31292061732027446174756d272c0a20202020202020207965617228702e6461746529204a6168722c0a2020202020202020732e62657a656963686e756e67205374617475732c0a202020202020202073742e62657a656963686e756e672053746174696f6e2c0a2020202020202020672e62657a656963686e756e67204772757070652c0a2020202020202020642e62657a656963686e756e67204469737472696b742c0a202020202020202067742e62657a656963686e756e67204772757070656e7479702c0a20202020202020206774732e62657a656963686e756e67204772757070656e7465696c6e65686d65727374617475732c0a20202020202020202863617365207768656e20732e6d6974676c6965645f796e3d30207468656e20274b65696e204d6974676c6965642720656c736520274d6974676c6965642720656e642920617320204d6974676c6965642c0a202020202020202073756d28702e6e6577706572736f6e5f636f756e7429206e6577706572736f6e5f636f756e742c200a2020202020202020726f756e642873756d28702e636f756e74292f636f756e7428702e636f756e74292c302920617320636f756e740a202020202020202066726f6d206372705f67726f757020700a2020202020202020202020202020206c656674206a6f696e206364625f7374617475732073206f6e2028732e69643d702e7374617475735f6964290a2020202020202020202020202020206c656674206a6f696e206364625f6772757070652067206f6e2028672e69643d702e6772757070655f6964290a2020202020202020202020202020202020202020206c656674206a6f696e206364625f6772757070656e747970206774206f6e202867742e69643d672e6772757070656e7479705f69642920202020202020200a2020202020202020202020202020202020202020206c656674206a6f696e206364625f6469737472696b742064206f6e2028642e69643d672e6469737472696b745f69642920202020202020200a2020202020202020202020202020206c656674206a6f696e206364625f6772757070656e7465696c6e65686d657273746174757320677473206f6e20286774732e69643d702e6772757070656e7465696c6e65686d65727374617475735f6964290a2020202020202020202020202020206c656674206a6f696e206364625f73746174696f6e207374206f6e202873742e69643d702e73746174696f6e5f6964290a2020202020202020207768657265206461746564696666286e6f7728292c20702e64617465293c372a380a20202020202020202067726f757020627920446174756d2c205374617475732c2053746174696f6e2c204772757070652c204469737472696b742c204772757070656e7479702c204d6974676c6965642c204772757070656e7465696c6e65686d6572737461747573090a202020202020202020, 30)");	    
     
     db_query("ALTER TABLE {cdb_gruppe} ENGINE = INNODB");
     db_query("ALTER TABLE {cdb_gruppentyp} ENGINE = INNODB");
@@ -1886,7 +1886,7 @@ function run_db_updates($db_version) {
     
     db_query("ALTER TABLE {cc_usersettings} ADD serialized_yn INT( 1 ) NOT NULL DEFAULT '0'");
     
-    // Change the save method for intelligence groups to separte usersettings for each group
+    // Change the save method for intelligente groups to separte usersettings for each group
     $db=db_query("select * from {cc_usersettings} where modulename='churchdb' and attrib='filter'");
     foreach ($db as $filter) {
       $arr=unserialize($filter->value);
@@ -1916,29 +1916,31 @@ function run_db_updates($db_version) {
     }
     
     set_version("2.50");
-  }
+  } //end switch
     
 	  
-    $a=db_query("select * from {cc_config} where name='version'",null,false);
-    $software_version=$a->fetch()->value;
-    
-    $link=' <a href="https://intern.churchtools.de/?q=churchwiki#WikiView/filterWikicategory_id:0/doc:changelog/" target="_clean">Neuigkeiten anschauen</a>';
-    
-    if ($db_version == "nodb")
-      addInfoMessage("Datenbankupdates ausgef&uuml;hrt auf v$software_version.");
-    else
-      addInfoMessage("Datenbankupdates ausgef&uuml;hrt von <I>".variable_get("site_name")."</i>. Versionswechsel von $db_version auf $software_version. $link");
-    cleanI18nFiles();
-    $sitename=$config["site_name"];
-    churchcore_systemmail($config["site_mail"], "Neue Version auf ".$config["site_name"], 
-        "Datenbankupdates ausgef&uuml;hrt von ".variable_get("site_name")."' v$db_version auf v$software_version. $link<br/><br/>".
-           "<a href=\"$base_url\" class=\"btn\">$sitename aufrufen</a>", true);
-    if (userLoggedIn()) {
-      $user=$_SESSION["user"];
-      $user->auth=getUserAuthorization($user->id);
-      $_SESSION["user"]=$user;
-    }
-    return true;
+  $a=db_query("select * from {cc_config} where name='version'",null,false);
+  $software_version=$a->fetch()->value;
+  
+  $link=' <a href="https://intern.churchtools.de/?q=churchwiki#WikiView/filterWikicategory_id:0/doc:changelog/" target="_clean">Neuigkeiten anschauen</a>';
+  
+  if ($db_version == "nodb")
+    addInfoMessage("Datenbankupdates ausgef&uuml;hrt auf v$software_version.");
+  else
+    addInfoMessage("Datenbankupdates ausgef&uuml;hrt von <I>".variable_get("site_name")."</i>. Versionswechsel von $db_version auf $software_version. $link");
+  
+  cleandir("$files_dir/files/messages/"); //delete temporal i18n files
+  
+  $sitename=$config["site_name"];
+  churchcore_systemmail($config["site_mail"], "Neue Version auf ".$config["site_name"], 
+      "Datenbankupdates ausgef&uuml;hrt von ".variable_get("site_name")."' v$db_version auf v$software_version. $link<br/><br/>".
+         "<a href=\"$base_url\" class=\"btn\">$sitename aufrufen</a>", true);
+  if (userLoggedIn()) {
+    $user=$_SESSION["user"];
+    $user->auth=getUserAuthorization($user->id);
+    $_SESSION["user"]=$user;
+  }
+  return true;
 }
 
 ?>

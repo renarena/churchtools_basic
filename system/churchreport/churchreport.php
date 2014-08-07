@@ -65,7 +65,7 @@ class CTChurchReportModule extends CTAbstractModule {
     $data["files_url"] = $base_url.$files_dir;
     $data["files_dir"] = $files_dir;
     $data["modulename"] = "churchreport";
-    $data["modulespath"] = drupal_get_path('module', 'churchreport');
+    $data["modulespath"] = CHURCHREPORT;
     $data["adminemail"] = variable_get('site_mail', 'info@churchtools.de');
     $querys=churchcore_getTableData("crp_query");
     $data["query"] = array();
@@ -104,13 +104,13 @@ function churchreport__ajax() {
 
 function churchreport_main() {
   global $files_dir;
-  include_once("system/includes/forms.php");
+  include_once(INCLUDES."/forms.php");
 
   drupal_add_js('system/assets/js/jquery.history.js'); 
   
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_abstractview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_standardview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_maintainstandardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_abstractview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_maintainstandardview.js'); 
   
   drupal_add_js('system/assets/pivottable/pivot.js');
   drupal_add_css('system/assets/pivottable/pivot.css');

@@ -13,7 +13,7 @@
 
 function churchcal_main() {
   global $config, $base_url, $config, $embedded;
-  include_once("system/includes/forms.php");
+  include_once(INCLUDES."/forms.php");
   
   drupal_add_css('system/assets/fullcalendar/fullcalendar.css');
   if (isset($_GET["printview"]))
@@ -24,9 +24,9 @@ function churchcal_main() {
   
   drupal_add_js('system/assets/fullcalendar/fullcalendar.min.js');
   
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_abstractview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_standardview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_maintainstandardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_abstractview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_maintainstandardview.js'); 
   drupal_add_js('system/churchcal/eventview.js');
   drupal_add_js('system/churchcal/yearview.js');
   drupal_add_js('system/churchcal/calendar.js');
@@ -148,7 +148,7 @@ function churchcal_getAuth() {
 
 function churchcal_getMyServices() {
   global $user;
-  include_once(drupal_get_path('module', 'churchservice') .'/churchservice_db.inc');
+  include_once(CHURCHSERVICE .'/churchservice_db.inc');
   
   $res=churchservice_getUserCurrentServices($user->id);
   
@@ -164,7 +164,7 @@ function churchcal_getMyServices() {
 function churchcal_getAbsents($params) {
   global $user;
   
-  include_once(drupal_get_path('module', 'churchdb').'/churchdb_db.inc');
+  include_once(CHURCHDB.'/churchdb_db.inc');
   $persons=array();
   
   if (isset($params["cal_ids"])) {
@@ -209,7 +209,7 @@ function churchcal_getBirthdays($params) {
   $all=(isset($params["all"])) && ($params["all"]==true);
   
   
-  include_once("system/churchdb/churchdb_db.inc");
+  include_once(CHURCHDB."/churchdb_db.inc");
   
   if (!$all) {
     $gpids=churchdb_getMyGroups($user->id, true, false);
@@ -358,13 +358,13 @@ function churchcal_deleteEvent($params, $source=null) {
     
   // BENACHRICHTIGE ANDERE MODULE
   if (($source==null) || ($source!="churchresource")) {
-    include_once(drupal_get_path('module', 'churchresource') .'/churchresource_db.inc');
+    include_once(CHURCHRESOURCE .'/churchresource_db.inc');
     if ($source==null) $source="churchcal";
     $params["cal_id"]=$params["id"];
     churchresource_deleteResourcesFromChurchCal($params, $source);
   }
   if (($source==null) || ($source!="churchservice")) {
-    include_once(drupal_get_path('module', 'churchservice') .'/churchservice_db.inc');
+    include_once(CHURCHSERVICE .'/churchservice_db.inc');
     $cs_params=array_merge(array(), $params);
     $cs_params["cal_id"]=$params["id"];
     $cs_params["informDeleteEvent"]=1;
@@ -627,12 +627,12 @@ function churchcal_getCalEvents() {
 }
 
 function churchcal_getAllowedGroups() {
-  include_once(drupal_get_path('module', 'churchdb').'/churchdb_db.inc');
+  include_once(CHURCHDB.'/churchdb_db.inc');
   return churchdb_getAllowedGroups();
 }
   
 function churchcal_getAllowedPersons() {
-  include_once(drupal_get_path('module', 'churchdb').'/churchdb_ajax.inc');
+  include_once(CHURCHDB.'/churchdb_ajax.inc');
   return churchdb_getAllowedPersonData('archiv_yn=0');
 }
 
@@ -647,7 +647,7 @@ class CTChurchCalModule extends CTAbstractModule {
     global $user, $base_url;
     $ret=array();
     $ret["modulename"]="churchcal";
-    $ret["modulespath"]=drupal_get_path('module', 'churchcal');
+    $ret["modulespath"]=CHURCHCAL;
     $ret["churchservice_name"]=variable_get("churchservice_name");
     $ret["churchcal_name"]=variable_get("churchcal_name");
     $ret["churchresource_name"]=variable_get("churchresource_name");
@@ -676,7 +676,7 @@ class CTChurchCalModule extends CTAbstractModule {
   
   
   public function getAllowedPeopleForCalender($params) {
-    include_once('./'. drupal_get_path('module', 'churchdb') .'/churchdb_db.inc');
+    include_once('./'. CHURCHDB .'/churchdb_db.inc');
     $db=db_query("select * from {cc_domain_auth} where daten_id=:daten_id and auth_id=403",
         array(":daten_id"=>$params["category_id"]));
     $res=array();
@@ -710,7 +710,7 @@ class CTChurchCalModule extends CTAbstractModule {
 }
 
 function churchcal__ajax() {
-  include_once("system/churchcal/churchcal_db.inc");
+  include_once(CHURCHCAL."/churchcal_db.inc");
   
   $module=new CTChurchCalModule("churchcal");
   
@@ -741,7 +741,7 @@ function churchcal__ajax() {
 
 function churchcal__ical() {
   global $base_url, $config;
-  include_once("system/churchcal/churchcal_db.inc");
+  include_once(CHURCHCAL."/churchcal_db.inc");
   
   drupal_add_http_header('Content-Type','text/calendar;charset=utf-8',false);
   drupal_add_http_header('Content-Disposition','inline;filename="ChurchTools.ics"',false);  

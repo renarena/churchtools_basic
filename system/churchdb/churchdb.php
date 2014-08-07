@@ -12,7 +12,7 @@
  */
 
 function churchdb__ajax() {
-  include_once(drupal_get_path('module', 'churchdb').'/churchdb_ajax.inc');
+  include_once(CHURCHDB.'/churchdb_ajax.inc');
   call_user_func("churchdb_ajax");
 }
 
@@ -92,7 +92,7 @@ function churchdb_getAdminModel() {
 function churchdb_main() {
   
   global $user;
-  //drupal_add_css(drupal_get_path('module', 'churchcore').'/churchcore_bootstrap.css');
+  //drupal_add_css(CHURCHCORE.'/churchcore_bootstrap.css');
   drupal_add_css('system/assets/fileuploader/fileuploader.css'); 
   drupal_add_css('system/assets/dynatree/ui.dynatree.css');
   
@@ -107,21 +107,21 @@ function churchdb_main() {
   drupal_add_js('system/assets/ckeditor/ckeditor.js');
   drupal_add_js('system/assets/ckeditor/lang/de.js');  
   
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_abstractview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_standardview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_maintainstandardview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_cdbstandardview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_geocode.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_loadandmap.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_settingsview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_importview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_personview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_archiveview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_groupview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_statisticview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_mapview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_maintainview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_main.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_abstractview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_maintainstandardview.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_cdbstandardview.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_geocode.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_loadandmap.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_settingsview.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_importview.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_personview.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_archiveview.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_groupview.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_statisticview.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_mapview.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_maintainview.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_main.js'); 
   
   drupal_add_js(createI18nFile("churchcore"));
   drupal_add_js(createI18nFile("churchdb"));
@@ -156,7 +156,7 @@ function externmapview_main() {
     
   global $user;
   drupal_add_css('system/assets/fileuploader/fileuploader.css'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/shortcut.js'); 
+  drupal_add_js(CHURCHCORE .'/shortcut.js'); 
   drupal_add_css('system/assets/ui/jquery-ui-1.8.18.custom.css');
   
   drupal_add_js('system/assets/js/jquery.history.js'); 
@@ -174,22 +174,20 @@ function externmapview_main() {
   drupal_add_js('system/assets/ckeditor/ckeditor.js');
   drupal_add_js('system/assets/ckeditor/lang/de.js');  
   
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/churchcore.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/churchforms.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_abstractview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_standardview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_maintainstandardview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_interface.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_cdbstandardview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_geocode.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_loadandmap.js'); 
-  //drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_mapview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchdb') .'/cdb_externgroupview.js'); 
-  
+  drupal_add_js(CHURCHCORE .'/churchcore.js'); 
+  drupal_add_js(CHURCHCORE .'/churchforms.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_abstractview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_maintainstandardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_interface.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_cdbstandardview.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_geocode.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_loadandmap.js'); 
+  //drupal_add_js(CHURCHDB .'/cdb_mapview.js'); 
+  drupal_add_js(CHURCHDB .'/cdb_externgroupview.js'); 
   drupal_add_js(createI18nFile("churchcore"));
   drupal_add_js(createI18nFile("churchdb"));
   
-
   // API v3
   $content='<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true"></script>';
 
@@ -238,19 +236,19 @@ function externmapview__ajax() {
     $res["home_lng"] = variable_get('churchdb_home_lng', '10.03656');
     $res["districts"]=churchcore_getTableData("cdb_distrikt", "bezeichnung");      
     $res["groups"]=getExternalGroupData();
-    $res["modulespath"] = drupal_get_path('module', 'churchdb');
+    $res["modulespath"] = CHURCHDB;
     $res["user_pid"] =$user->id;
     $res["vorname"]=$user->vorname;
     $res=jsend()->success($res);    
   }
   else if ($func=='addPersonGroupRelation') {
-    include_once(drupal_get_path('module', 'churchdb').'/churchdb_ajax.inc');
+    include_once(CHURCHDB.'/churchdb_ajax.inc');
     $res=churchdb_addPersonGroupRelation($user->id, $_GET["g_id"], -2, null, null, null, "Anfrage &uuml;ber externe MapView");
     sendConfirmationMail($user->email, $user->vorname, $_GET["g_id"]);    
     $res=jsend()->success($res);
   }
   else if ($func=='editPersonGroupRelation') {
-    include_once(drupal_get_path('module', 'churchdb').'/churchdb_ajax.inc');
+    include_once(CHURCHDB.'/churchdb_ajax.inc');
     $res=_churchdb_editPersonGroupRelation($user->id,
        $_GET["g_id"], -2,null, "null", "Anfrage ge&auml;ndert &uuml;ber externe MapView");
     sendConfirmationMail($user->email, $user->vorname, $_GET["g_id"]);    
@@ -264,7 +262,7 @@ function externmapview__ajax() {
       )->fetch();
     $txt="";  
     if ($db!=false) {
-      include_once(drupal_get_path('module', 'churchdb').'/churchdb_ajax.inc');
+      include_once(CHURCHDB.'/churchdb_ajax.inc');
       churchdb_addPersonGroupRelation($db->id, $_GET["g_id"], -2, null, null, null, "Anfrage &uuml;ber externe MapView: ".$_GET["Kommentar"]);
       sendConfirmationMail($_GET["E-Mail-Adresse"], $_GET["Vorname"], $_GET["g_id"]);    
       $txt="Person gefunden und Anfrage wurde gesendet!";      
@@ -398,7 +396,7 @@ function getWhoIsOnline() {
 
 function subscribeGroup() {
   global $user;
-  include_once(drupal_get_path('module', 'churchdb').'/churchdb_db.inc');
+  include_once(CHURCHDB.'/churchdb_db.inc');
   
   $sql_gruppenteilnahme="select g.bezeichnung, gpg.* from {cdb_gemeindeperson_gruppe} gpg, {cdb_gemeindeperson} gp, {cdb_gruppe} g 
                    where gpg.gemeindeperson_id=gp.id and gp.person_id=:person_id 
@@ -410,7 +408,7 @@ function subscribeGroup() {
     if (!$res)
       addErrorMessage("Gruppenteilnahme konnte nicht beantragt werden.");
     else {
-      include_once(drupal_get_path('module', 'churchdb').'/churchdb_ajax.inc');
+      include_once(CHURCHDB.'/churchdb_ajax.inc');
       $grp=db_query($sql_gruppenteilnahme,
         array(":person_id"=>$user->id, ":g_id"=>$_GET["subscribegroup"]))->fetch();
       if (!$grp)     
@@ -426,7 +424,7 @@ function subscribeGroup() {
     if (!$res)
       addErrorMessage("Gruppenteilnahme konnte nicht beendet werden.");
     else {
-      include_once(drupal_get_path('module', 'churchdb').'/churchdb_ajax.inc');
+      include_once(CHURCHDB.'/churchdb_ajax.inc');
       _churchdb_editPersonGroupRelation($user->id, $res->gruppe_id, -1, null, "null", "Beendung angefragt durch Formular");
       addInfoMessage("Die Teilnahme an <i>$res->bezeichnung</i> wurde als zu l&ouml;schen markiert.");      
     }          
@@ -966,8 +964,8 @@ function churchdb__mailviewer() {
   foreach ($res as $arr) {
     $txt.="<tr><td>";
     if ($arr->send_date!=null)
-      if ($arr->error==0) $txt.='<img title="'.$arr->send_date.'" style="max-width:20px;" src="system/churchcore/images/check-64.png"/>';
-      else $txt.='<img title="'.$arr->send_date.'" style="max-width:20px;" src="system/churchcore/images/delete_2.png"/>';
+      if ($arr->error==0) $txt.='<img title="'.$arr->send_date.'" style="max-width:20px;" src=CHURCHCORE."/images/check-64.png"/>';
+      else $txt.='<img title="'.$arr->send_date.'" style="max-width:20px;" src=CHURCHCORE."/images/delete_2.png"/>';
       $txt.="<td>$arr->modified_date<td>$arr->receiver<td>$arr->sender<td><a href=\"?q=churchdb/mailviewer&id=$arr->id\">$arr->subject</a>";
       $txt.="<td>$arr->reading_count";
     $counter++;
@@ -1044,7 +1042,7 @@ function churchdb_cron() {
   // Synce MailChimp
   if ($config["churchdb_mailchimp_apikey"]!="") {
 
-    include_once("system/assets/mailchimp-api-class/inc/MCAPI.class.php");
+    include_once(ASSETS."/mailchimp-api-class/inc/MCAPI.class.php");
     $api = new MCAPI($config["churchdb_mailchimp_apikey"]);
     $list_id=null;
     $db=db_query("select * from {cdb_gruppe_mailchimp} order by mailchimp_list_id");

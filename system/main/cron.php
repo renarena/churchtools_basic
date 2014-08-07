@@ -7,7 +7,7 @@ function do_cron() {
   $btns= churchcore_getModulesSorted(false, false);
   
   foreach ($btns as $key) {
-    include_once("system/$key/$key.php");
+    include_once(constant(strtoupper($key))."/$key.php");
     if (function_exists($key."_cron")) {
       if ((isset($config[$key."_name"])) && ($config[$key."_name"]!=""))
         $arr=call_user_func($key."_cron");

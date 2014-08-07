@@ -37,7 +37,7 @@ function home_main() {
     
     foreach ($btns as $key) {
       if ((isset($config[$key."_name"])) && ($config[$key."_name"]!="") && (user_access("view", $key)))  {   
-        include_once("system/".$mapping[$key]);
+        include_once(SYSTEM.$mapping[$key]);
         $txt.=  
         '<li><a class="btn btn-large" href="?q='.$key.'">
           '.$config[$key."_name"].'
@@ -51,7 +51,7 @@ function home_main() {
   $blocks=null;
   foreach ($btns as $key) {
     if ((isset($config[$key."_name"])) && ($config[$key."_name"]!="")) {
-      include_once("system/".$mapping[$key]);
+      include_once(SYSTEM.$mapping[$key]);
       if (function_exists($key."_blocks")) {
         $arr=call_user_func($key."_blocks");
         foreach ($arr as $block) {
@@ -219,7 +219,7 @@ function home__memberlist_printview() {
   global $base_url, $files_dir, $config;
   //  $content='<html><head><meta http-equiv="Content-Type" content="application/pdf; charset=utf-8" />';
 //   drupal_add_css('system/bootstrap/css/bootstrap.min.css');
-//  drupal_add_css(drupal_get_path('module', 'churchdb').'/cdb_printview.css');
+//  drupal_add_css(CHURCHDB.'/cdb_printview.css');
 //  $content=$content.drupal_get_header();
   if (!user_access("view memberliste","churchdb")) { 
      addErrorMessage(t("no.permission.for", t("list.of.members")));
@@ -343,7 +343,7 @@ function home__memberlist_saveSettings($form) {
 
 function _home__memberlist_getSettingFields() {
   global $config;
-  include_once("system/includes/forms.php");
+  include_once(INCLUDES."/forms.php");
 
   $model = new CC_Model("AdminForm", "home__memberlist_saveSettings");
   $model->setHeader("Einstellungen f&uuml;r die Mitgliederliste", "Der Administrator kann hier Einstellung vornehmen.");
@@ -384,7 +384,7 @@ class CTHomeModule extends CTAbstractModule {
     $res["modulename"]="churchcore";
     $modules=churchcore_getModulesSorted();
     if (in_array("churchdb", $modules)) {
-      include_once('./'. drupal_get_path('module', 'churchdb') .'/churchdb_db.inc');
+      include_once('./'. CHURCHDB .'/churchdb_db.inc');
       $res["mygroups"]=churchdb_getMyGroups($user->id, false, false);
       foreach ($res["mygroups"] as $g) {
         if (!isset($g->status_no) || (($g!=null) && ($g->members_allowedmail_eachother_yn==0) 
@@ -393,13 +393,13 @@ class CTHomeModule extends CTAbstractModule {
       }
     }
     if (in_array("churchcal", $modules)) {
-      include_once('./'. drupal_get_path('module', 'churchcal') .'/churchcal_db.inc');
+      include_once('./'. CHURCHCAL .'/churchcal_db.inc');
       $res["meetingRequests"]=churchcal_getMyMeetingRequest();
     }
     return $res;    
   }
   public function updateEventService($params) {
-    include_once('./'. drupal_get_path('module', 'churchservice') .'/churchservice_ajax.inc');
+    include_once('./'. CHURCHSERVICE .'/churchservice_ajax.inc');
     return churchservice_updateEventService($params);    
   }  
   public function undoLastUpdateEventService($params) {
@@ -428,7 +428,7 @@ class CTHomeModule extends CTAbstractModule {
   }
   public function sendEMail($params) {
     global $user;
-    include_once('./'. drupal_get_path('module', 'churchdb') .'/churchdb_db.inc');
+    include_once('./'. CHURCHDB .'/churchdb_db.inc');
     $groups=churchdb_getMyGroups($user->id, true, false);
     if (empty($groups[$params["groupid"]])) 
       throw new CTException("Group is not allowed!");
@@ -436,7 +436,7 @@ class CTHomeModule extends CTAbstractModule {
     churchcore_sendEMailToPersonids(implode(",", $ids), "[".variable_get('site_name', 'ChurchTools')."] Nachricht von $user->vorname $user->name", $params["message"], null, true);
   }
   public function updateMeetingRequest($params) {
-    include_once('./'. drupal_get_path('module', 'churchcal') .'/churchcal_db.inc');
+    include_once('./'. CHURCHCAL .'/churchcal_db.inc');
     churchcal_updateMeetingRequest($params);
   }
 }

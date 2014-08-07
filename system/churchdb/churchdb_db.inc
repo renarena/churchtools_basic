@@ -1,6 +1,6 @@
 <?php
 
-include_once('./'. drupal_get_path('module', 'churchdb') .'/../churchcore/churchcore_db.inc');
+include_once('./'. CHURCHDB .'/../churchcore/churchcore_db.inc');
 
 
 /**

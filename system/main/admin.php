@@ -1,6 +1,6 @@
 <?php 
 
-include_once("system/includes/forms.php");
+include_once(INCLUDES."/forms.php");
 
 class CC_ModulModel extends CC_Model {
   public function __construct($modulename) {
@@ -107,7 +107,7 @@ function admin_main() {
   // Now iterate through each module getting the admin forms
   $m=array();
   foreach ($modules as $module) {
-    include_once(drupal_get_path('module', $module)."/$module.php");
+    include_once(constant(strtoupper($modul))."/$module.php");
     if (function_exists($module."_getAdminModel")) {
       $model=call_user_func($module."_getAdminModel");
       if ($model!=null)
@@ -145,7 +145,7 @@ function admin_main() {
 function admin__uploadfile() {
   global $files_dir, $config;
   
-  include_once("system/churchcore/uploadFile.php");
+  include_once(CHURCHCORE."/uploadFile.php");
   churchcore__uploadFile();
 }
 

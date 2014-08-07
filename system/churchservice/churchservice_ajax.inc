@@ -1,6 +1,6 @@
 <?php
-include_once(drupal_get_path('module', 'churchcore') .'/churchcore_db.inc');
-include_once(drupal_get_path('module', 'churchdb') .'/churchdb_db.inc');
+include_once(CHURCHCORE .'/churchcore_db.inc');
+include_once(CHURCHDB .'/churchdb_db.inc');
 
 // Gibt array mit g_ids zur�ck
 function churchservice_getGroupsOfService($service_id) {
@@ -173,7 +173,7 @@ function churchservice_getAuthorization() {
 
 
 function churchservice_getModulesPath() {
-  return drupal_get_path('module', 'churchservice');
+  return CHURCHSERVICE;
 }
 
 function churchservice_extractEventServiceData($arr, $auth=null, $event_admin=false) {
@@ -222,7 +222,7 @@ function churchservice_getAllEventData($params) {
   
   $auth=churchservice_getAuthorization();
   
-  include_once(drupal_get_path('module', 'churchcal') .'/churchcal_db.inc');
+  include_once(CHURCHCAL .'/churchcal_db.inc');
   $cat=churchcal_getAllowedCategories(false, true);
   $cat[]=-1;
   
@@ -434,7 +434,7 @@ function churchservice_updateEventService($params) {
   $reason=(isset($params["reason"])?$params["reason"]:null);
   $zugesagt_yn=$params["zugesagt_yn"];
   
-  include_once('system/churchservice/churchservice_db.inc');
+  include_once(CHURCHSERVICE."/churchservice_db.inc");
   
   $res=array();
   
@@ -486,7 +486,7 @@ function churchservice_updateEventService($params) {
       ->execute();
   }
 
-  include_once("system/churchcore/churchcore_db.inc");
+  include_once(CHURCHCORE."/churchcore_db.inc");
   $leader=churchcore_getPersonById($arr->modified_pid);
   
   
@@ -611,7 +611,7 @@ function churchservice_ical() {
 
   $content=drupal_get_header();
 
-  include_once('./'. drupal_get_path('module', 'churchservice') .'/churchservice_db.inc');  
+  include_once('./'. CHURCHSERVICE .'/churchservice_db.inc');  
   $arr=churchservice_getUserCurrentServices($id);
   
   $txt="";
@@ -985,7 +985,7 @@ class CTChurchServiceModule extends CTAbstractModule {
   
   public function getMasterData() {
     global $user, $base_url, $files_dir, $config;
-      include_once(drupal_get_path('module', 'churchcal') .'/churchcal_db.inc');
+      include_once(CHURCHCAL .'/churchcal_db.inc');
       $auth=churchservice_getAuthorization();
       $res=$this->getMasterDataTables();
 	  $res["masterDataTables"] = $this->getMasterDataTablenames();

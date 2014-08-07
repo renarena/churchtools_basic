@@ -85,7 +85,7 @@ function churchwiki_cron() {
 }
 
 function churchwiki__filedownload() {
-  include_once("system/churchcore/churchcore.php");
+  include_once(CHURCHCORE."/churchcore.php");
   churchcore__filedownload();  
 }
 
@@ -110,7 +110,7 @@ class CTChurchWikiModule extends CTAbstractModule {
     $data["files_url"] = $base_url.$files_dir;
     $data["files_dir"] = $files_dir;
     $data["modulename"] = "churchwiki";
-    $data["modulespath"] = drupal_get_path('module', 'churchwiki');
+    $data["modulespath"] = CHURCHWIKI;
     $data["adminemail"] = variable_get('site_mail', '');
     return $data;   
   }
@@ -291,7 +291,7 @@ function churchwiki_blocks() {
       
 
 function churchwiki__create() {
-  include_once("system/includes/forms.php");
+  include_once(INCLUDES."/forms.php");
 
   $model = new CC_Model("EditHtml", "editHtml");
   $model->setHeader("Editieren eines Hilfeeintrages", "Hier kann die Hilfe editiert werden.");    
@@ -332,7 +332,7 @@ function help_main() {
 
 function churchwiki_main() {
   global $files_dir;
-  include_once("system/includes/forms.php");
+  include_once(INCLUDES."/forms.php");
 
   drupal_add_js('system/assets/js/jquery.history.js'); 
   
@@ -345,9 +345,9 @@ function churchwiki_main() {
   drupal_add_js('system/assets/mediaelements/mediaelement-and-player.min.js'); 
   drupal_add_css('system/assets/mediaelements/mediaelementplayer.css');
   
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_abstractview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_standardview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_maintainstandardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_abstractview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_maintainstandardview.js'); 
   
   drupal_add_js('system/assets/ckeditor/ckeditor.js');
   drupal_add_js('system/assets/ckeditor/lang/de.js');
@@ -380,7 +380,7 @@ function churchwiki_main() {
 
 function churchwiki__printview() {
   global $files_dir;
-  include_once("system/includes/forms.php");
+  include_once(INCLUDES."/forms.php");
 
   drupal_add_js('system/assets/js/jquery.history.js'); 
   
@@ -390,11 +390,11 @@ function churchwiki__printview() {
   drupal_add_js('system/assets/tablesorter/jquery.tablesorter.min.js'); 
   drupal_add_js('system/assets/tablesorter/jquery.tablesorter.widgets.min.js'); 
   
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/shortcut.js'); 
+  drupal_add_js(CHURCHCORE .'/shortcut.js'); 
   
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_abstractview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_standardview.js'); 
-  drupal_add_js(drupal_get_path('module', 'churchcore') .'/cc_maintainstandardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_abstractview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 
+  drupal_add_js(CHURCHCORE .'/cc_maintainstandardview.js'); 
   
   drupal_add_js('system/assets/ckeditor/ckeditor.js');
   drupal_add_js('system/assets/ckeditor/lang/de.js');

@@ -106,7 +106,7 @@ function loadDBConfig() {
       $config[$val->name]=$val->value;
     }
   }
-  catch (Exception $e) {
+  catch (SQLException $e) {
   }  
 }
 
@@ -194,7 +194,7 @@ function getBaseUrl() {
  */
 function pleaseAcceptDatasecurity() {
   global $user, $q;
-  include_once("system/churchwiki/churchwiki.php");
+  include_once(CHURCHWIKI."/churchwiki.php");
   if (isset($_GET["acceptsecurity"])) {
     db_query("update {cdb_person} set acceptedsecurity=current_date() where id=$user->id");
     $user->acceptedsecurity=new DateTime();
@@ -272,7 +272,7 @@ function churchtools_main() {
   
   $base_url=getBaseUrl();
   
-  include_once("system/churchcore/churchcore_db.inc");
+  include_once(CHURCHCORE."/churchcore_db.inc");
   include_once("system/lib/i18n.php");
   
   $config = loadConfig();
@@ -294,7 +294,7 @@ function churchtools_main() {
         else
           $config["language"]="de";
       }
-      $i18n = new TextBundle("system/churchcore/resources/messages");
+      $i18n = new TextBundle(CHURCHCORE."/resources/messages");
       $i18n->load("churchcore", ($config["language"]!=null ? $config["language"] : null));
       
       // Session Init
@@ -360,9 +360,9 @@ function churchtools_main() {
       }
     }
   }
-  include("system/includes/header.php");    
+  include(INCLUDES."/header.php");    
   echo $content;
-  include("system/includes/body.php");
+  include(INCLUDES."/body.php");
 }
 
 ?>

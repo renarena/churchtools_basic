@@ -637,7 +637,7 @@ function getAllFields($where="1=1") {
 }
 
 function churchdb_getModulesPath() {
-  return drupal_get_path('module', 'churchdb');
+  return CHURCHDB;
 }
 
 function churchdb_getMasterDataTablenames() {
@@ -1022,7 +1022,7 @@ function churchdb_loadMailchimp() {
     $zuordnung[]=$g;
   }
   
-  include_once("system/assets/mailchimp-api-class/inc/MCAPI.class.php");
+  include_once(ASSETS."/mailchimp-api-class/inc/MCAPI.class.php");
   $api = new MCAPI($config["churchdb_mailchimp_apikey"]);
  
   $res=new stdClass();
