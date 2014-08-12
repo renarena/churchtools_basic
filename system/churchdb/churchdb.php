@@ -11,11 +11,19 @@
  *
  */
 
+/**
+ * 
+ */
 function churchdb__ajax() {
   include_once(CHURCHDB.'/churchdb_ajax.inc');
-  call_user_func("churchdb_ajax");
+  call_user_func("churchdb_ajax"); //TODO: why not churchdb_ajax()?
 }
 
+/**
+ * get auth for churchdb
+ * 
+ * @return array
+ */
 function churchdb_getAuth() {
   $cc_auth = array();
   $cc_auth=addAuth($cc_auth, 121,'view birthdaylist', 'churchdb', null, 'Geburtagsliste einsehen', 1);
@@ -49,6 +57,11 @@ function churchdb_getAuth() {
   return $cc_auth;
 }
 
+/**
+ * TODO - rethink naming - looks like preferences - AdminModel???
+ * 
+ * @return CC_ModulModel
+ */
 function churchdb_getAdminModel() {
   global $config;
   
@@ -89,6 +102,9 @@ function churchdb_getAdminModel() {
   return $model;  
 }
 
+/**
+ * @return string
+ */
 function churchdb_main() {
   
   global $user;
@@ -133,6 +149,7 @@ function churchdb_main() {
   if (isset($_GET["id"]) && ($_GET["id"]!=null))
     $content=$content."<input type=\"hidden\" id=\"filter_id\" value=\"".$_GET["id"]."\"/>";
 
+  // TODO: put in function - appears in several places
   $content=$content."
 <div class=\"row-fluid\">
   <div class=\"span3\">
@@ -152,6 +169,55 @@ function churchdb_main() {
   return $content;
 }
 
+
+/**
+ * get external group data
+ *
+ * @return array with group objects
+ */
+function getExternalGroupData() {
+  global $user;
+  $res=db_query("select id, bezeichnung, treffzeit, zielgruppe, max_teilnehmer,
+            geolat, geolng, treffname, versteckt_yn, valid_yn, distrikt_id, offen_yn, oeffentlich_yn
+            from {cdb_gruppe} where oeffentlich_yn=1 and versteckt_yn=0 and valid_yn=1");
+  $arr=array();
+  foreach ($res as $g) {
+    $db=db_query("select status_no from {cdb_gemeindeperson_gruppe} gpg, {cdb_gemeindeperson} gp
+                 where gp.id=gpg.gemeindeperson_id and gpg.gruppe_id=:gruppe_id
+                    and gp.person_id=:person_id", array(":gruppe_id"=>$g->id, ":person_id"=>$user->id))->fetch();
+    if ($db!=false)
+      $g->status_no=$db->status_no;
+    $arr[$g->id]=$g;
+  }
+  return $arr;
+}
+
+/**
+ * send confirmation email
+ *
+ * TODO: use email template (customisable!) from file, f.e.:
+ *		extract($vars);
+ *	    eval ('$content = "$message"');
+ *
+ * @param string $mail
+ * @param string $vorname
+ * @param int $g_id
+ */
+function sendConfirmationMail($mail, $vorname="", $g_id) {
+  $g=db_query("select * from {cdb_gruppe} where id=:id", array(":id"=>$g_id))->fetch();
+  if ($g!=false) {
+    $content="<h3>".t("hello.name")."</h3><p>";
+    $content.="Dein Antrag f&uuml;r die Gruppe <i>$g->bezeichnung</i> ist eingegangen. <p>Vielen Dank!";
+    $res = churchcore_mail(variable_get('site_mail'), $mail, "[".variable_get('site_name')."] Teilnahmeantrag zur Gruppe ".$g->bezeichnung, $content, true, true, 2);
+  }
+}
+/**
+ * view external map
+ * 
+ * TODO: maybe support use of openStreetMap too?
+ * 
+ * @return string
+ */
 function externmapview_main() {
     
   global $user;
@@ -193,7 +259,7 @@ function externmapview_main() {
 
   // Übergabe der ID für den Direkteinstieg einer Person
   if (isset($_GET["g_id"]) && ($_GET["g_id"]!=null))
-    $content=$content."<input type=\"hidden\" id=\"g_id\" value=\"".$_GET["g_id"]."\"/>";
+    $content=$content.'<input type="hidden" id="g_id" value="'.$_GET["g_id"].'"/>';
 
   $content=$content."
     <div id=\"cdb_content\" style=\"width:100%;height:500px\"></div>";
@@ -201,33 +267,9 @@ function externmapview_main() {
   return $content;
 }
 
-
-function getExternalGroupData() {
-  global $user;
-  $res=db_query("select id, bezeichnung, treffzeit, zielgruppe, max_teilnehmer, 
-            geolat, geolng, treffname, versteckt_yn, valid_yn, distrikt_id, offen_yn, oeffentlich_yn
-            from {cdb_gruppe} where oeffentlich_yn=1 and versteckt_yn=0 and valid_yn=1");
-  $arr=array();
-  foreach ($res as $g) {
-    $db=db_query("select status_no from {cdb_gemeindeperson_gruppe} gpg, {cdb_gemeindeperson} gp
-                 where gp.id=gpg.gemeindeperson_id and gpg.gruppe_id=:gruppe_id 
-                    and gp.person_id=:person_id", array(":gruppe_id"=>$g->id, ":person_id"=>$user->id))->fetch();
-    if ($db!=false)
-      $g->status_no=$db->status_no;
-    $arr[$g->id]=$g;    
-  }
-  return $arr;
-}
-
-function sendConfirmationMail($mail, $vorname="", $g_id) {
-  $g=db_query("select * from {cdb_gruppe} where id=:id", array(":id"=>$g_id))->fetch();
-  if ($g!=false) {
-    $inhalt="<h3>Hallo $vorname!</h3><p>";
-    $inhalt.="Dein Antrag f&uuml;r die Gruppe <i>$g->bezeichnung</i> ist eingegangen. <p>Vielen Dank!";
-    $res = churchcore_mail(variable_get('site_mail'), $mail, "[".variable_get('site_name')."] Teilnahmeantrag zur Gruppe ".$g->bezeichnung, $inhalt, true, true, 2);
-  }
-}
-
+/**
+ * view external map (ajax)
+ */
 function externmapview__ajax() {
   global $user;
   $func=$_GET["func"];
@@ -243,14 +285,14 @@ function externmapview__ajax() {
   }
   else if ($func=='addPersonGroupRelation') {
     include_once(CHURCHDB.'/churchdb_ajax.inc');
-    $res=churchdb_addPersonGroupRelation($user->id, $_GET["g_id"], -2, null, null, null, "Anfrage &uuml;ber externe MapView");
+    $res=churchdb_addPersonGroupRelation($user->id, $_GET["g_id"], -2, null, null, null, t("request.by.external.mapview"));
     sendConfirmationMail($user->email, $user->vorname, $_GET["g_id"]);    
     $res=jsend()->success($res);
   }
   else if ($func=='editPersonGroupRelation') {
     include_once(CHURCHDB.'/churchdb_ajax.inc');
     $res=_churchdb_editPersonGroupRelation($user->id,
-       $_GET["g_id"], -2,null, "null", "Anfrage ge&auml;ndert &uuml;ber externe MapView");
+       $_GET["g_id"], -2,null, "null", t("request.changed.by.external.mapview"));
     sendConfirmationMail($user->email, $user->vorname, $_GET["g_id"]);    
     $res=jsend()->success($res);
   }
@@ -263,9 +305,9 @@ function externmapview__ajax() {
     $txt="";  
     if ($db!=false) {
       include_once(CHURCHDB.'/churchdb_ajax.inc');
-      churchdb_addPersonGroupRelation($db->id, $_GET["g_id"], -2, null, null, null, "Anfrage &uuml;ber externe MapView: ".$_GET["Kommentar"]);
+      churchdb_addPersonGroupRelation($db->id, $_GET["g_id"], -2, null, null, null, t("request.by.external.mapview").": ".$_GET["Kommentar"]);
       sendConfirmationMail($_GET["E-Mail-Adresse"], $_GET["Vorname"], $_GET["g_id"]);    
-      $txt="Person gefunden und Anfrage wurde gesendet!";      
+      $txt=t("person.found.and.request.sent");      
     } 
     else {      
       $res=db_query("select vorname, p.id id, g.bezeichnung from {cdb_gemeindeperson_gruppe} gpg, {cdb_gemeindeperson} gp, 
@@ -276,31 +318,39 @@ function externmapview__ajax() {
       $rec=array();    
       foreach ($res as $p) {
         $rec[]=$p->vorname;
-        $inhalt="<h4>Anfrage zur Gruppe ".$p->bezeichnung."<h4/>";
-        $inhalt.="<ul><li>Vorname: ".$_GET["Vorname"];
-        $inhalt.="<li>Nachname: ".$_GET["Nachname"];
-        $inhalt.="<li>E-Mail: ".$_GET["E-Mail-Adresse"];
-        $inhalt.="<li>Telefon: ".$_GET["Telefon"];
-        $inhalt.="<li>Kommentar: ".$_GET["Kommentar"];
-        $inhalt.="</ul>";
-        $res = churchcore_sendEMailToPersonIds($p->id, "[".variable_get('site_name', 'ChurchTools')."] Formular-Anfrage zur Gruppe ".$p->bezeichnung, $inhalt, variable_get('site_mail'), true, true);            
+        $content="<h4>".t('request.to.group',$p->bezeichnung)."<h4/>";
+        $content.="<ul><li>".t('surname').": ".$_GET["Vorname"];
+        $content.="<li>".t('name').": ".$_GET["Nachname"];
+        $content.="<li>".t('email').": ".$_GET["E-Mail-Adresse"];
+        $content.="<li>".t('phone').": ".$_GET["Telefon"];
+        $content.="<li>".t('comment').": ".$_GET["Kommentar"];
+        $content.="</ul>";
+        $res = churchcore_sendEMailToPersonIds($p->id, "[".variable_get('site_name', 'ChurchTools')."] ". t('form.request.to.group', $p->bezeichnung), $content, variable_get('site_mail'), true, true);            
       }
       if (count($rec)==0)
-        $txt="Konnte leider keinen Leiter in der Gruppe finden. Bitte versuchen Sie es auf einem anderen Wege!";
+        $txt=t("could.not.find.group.leader.please.try.other.ways");
       else {    
-        $txt="Es wurde eine E-Mail an ".implode($rec," und ")." gesendet!";
+        $txt=t("email.send.to",implode($rec,", "));
         sendConfirmationMail($_GET["E-Mail-Adresse"], $_GET["Vorname"], $_GET["g_id"]);
       }
     }  
     $res=jsend()->success($txt);    
   }    
   else {
-    $res=jsend()->fail("Unbekannter Aufruf: ".$func);
+    $res=jsend()->fail(t("unknown.call",$func));
   }
   drupal_json_output($res);
 }
 
-
+/**
+ * get html formatted content for birthdaylist
+ * 
+ * @param string $desc; title for list?
+ * @param int $diff_from; age?
+ * @param int $diff_to; age?
+ * @param bool $extended; show extended list?
+ * @return string; html
+ */
 function getBirthdaylistContent($desc, $diff_from, $diff_to, $extended=false) {
   global $base_url, $files_dir;
   $txt="";
@@ -308,7 +358,7 @@ function getBirthdaylistContent($desc, $diff_from, $diff_to, $extended=false) {
   if (isset($_GET["compact"])) $compact=true;
   
   if (($extended) && (!user_access("view birthdaylist","churchdb"))) 
-    die("Nicht genug rechte");
+    die(t("no.permission.for", "view birthdaylist" )); //TODO: replace arg with translated name of view birthdaylist
     
     include_once("churchdb_db.inc");
     
@@ -320,19 +370,18 @@ function getBirthdaylistContent($desc, $diff_from, $diff_to, $extended=false) {
       if ($extended) {
         $txt.="<table class=\"table table-condensed\"><tr><th style=\"max-width:65px;\"><th>".t("name").
             (!$compact?"<th>".t("age"):"")."<th>".t("birthday");
- 	     	if ($see_details)
-          $txt.="<th>Status<th>Station<th>Bereich";
+ 	    if ($see_details)
+          $txt.="<th>".t("status")."<th>".t("station")."<th>".t("department");
       }
       foreach ($res as $arr) {
         //if ($extended) 
           $txt.="<tr><td>";
-        // Die naechsten Geb. muessen natuerlich noch einen Altersjahr dazu bekommen, wir wollen ja wissen wie alt sie werden.
+        // Add 1 to age, so we know the number of the next birthday :-)
         if ($diff_from>0) $arr->age=$arr->age+1;
 
-        // link zum Direkteinstieg in die DB
+        // link to access person on churchDB
 	    if ($extended) {
-          if ($arr->imageurl==null)
-            $arr->imageurl="nobody.gif";
+          if ($arr->imageurl==null) $arr->imageurl="nobody.gif";
           $txt.="<img class=\"\" width=\"42px\" style=\"max-width:42px;\" src=\"$base_url$files_dir/fotos/".$arr->imageurl."\"/>";
           $txt.="<td>";
   		  if ($see_details)
@@ -373,6 +422,10 @@ function getBirthdaylistContent($desc, $diff_from, $diff_to, $extended=false) {
   return $txt;	
 }
 
+/**
+ * get list of online users (html)
+ * @return string; html user list or null
+ */
 function getWhoIsOnline() {
   global $user;
   if (!user_access("view whoisonline","churchcore"))
@@ -384,16 +437,19 @@ function getWhoIsOnline() {
   foreach ($res as $p) {
     $test=new DateTime($p->datum);
     $seconds=$dt->format('U') - $test->format('U');
-    
-    if ($seconds<300) {
-      $txt.="<li>".$p->vorname." ".$p->name;
-    }
+    if ($seconds<300) $txt.="<li>".$p->vorname." ".$p->name;
   }
-  if ($txt!="")
-    $txt="<ul>$txt</ul>";
+  if ($txt!="") $txt="<ul>$txt</ul>";
+  
   return $txt;
 }
 
+/**
+ * do several things??? with groups and memberships
+ * 
+ * TODO: rename, maybe to groupMembership?
+ * @return string; html form
+ */
 function subscribeGroup() {
   global $user;
   include_once(CHURCHDB.'/churchdb_db.inc');
@@ -406,31 +462,31 @@ function subscribeGroup() {
     $res=db_query("select * from {cdb_gruppe} where id=:id and offen_yn=1",
         array(":id"=>$_GET["subscribegroup"]))->fetch();
     if (!$res)
-      addErrorMessage("Gruppenteilnahme konnte nicht beantragt werden.");
+      addErrorMessage(t("error.requesting.group.membership"));
     else {
       include_once(CHURCHDB.'/churchdb_ajax.inc');
       $grp=db_query($sql_gruppenteilnahme,
         array(":person_id"=>$user->id, ":g_id"=>$_GET["subscribegroup"]))->fetch();
       if (!$grp)     
-        churchdb_addPersonGroupRelation($user->id, $res->id, -2, null, null, null, "Anfrage &uuml;ber Formular");
+        churchdb_addPersonGroupRelation($user->id, $res->id, -2, null, null, null, t("request.by.form"));
       else  
-        _churchdb_editPersonGroupRelation($user->id, $res->id, -2, null, "null", "Beendigung angefragt &uuml;ber Formular");
-      addInfoMessage("Die Teilnahme an <i>$res->bezeichnung</i> ist nun beantragt, der Leiter wird informiert. Vielen Dank!");      
+        _churchdb_editPersonGroupRelation($user->id, $res->id, -2, null, "null", t("request.quitting.by.form"));
+      addInfoMessage(t("membership.requested.by.form.leader.will.be.informed"), $res->bezeichnung);      
     }          
   }
   if ((isset($_GET["unsubscribegroup"])) && ($_GET["unsubscribegroup"]>0)) {
     $res=db_query($sql_gruppenteilnahme,
         array(":person_id"=>$user->id, ":g_id"=>$_GET["unsubscribegroup"]))->fetch();
     if (!$res)
-      addErrorMessage("Gruppenteilnahme konnte nicht beendet werden.");
+      addErrorMessage(t("error.quitting.membership"));
     else {
       include_once(CHURCHDB.'/churchdb_ajax.inc');
-      _churchdb_editPersonGroupRelation($user->id, $res->gruppe_id, -1, null, "null", "Beendung angefragt durch Formular");
-      addInfoMessage("Die Teilnahme an <i>$res->bezeichnung</i> wurde als zu l&ouml;schen markiert.");      
+      _churchdb_editPersonGroupRelation($user->id, $res->gruppe_id, -1, null, "null", t("request.quitting.by.form"));
+      addInfoMessage(t("membership.marked.for.deleting", $res->bezeichnung));      
     }          
   }
   
-  // Hole erst mal meine Gruppen in denen ich TN bin oder schon angefragt hatte
+  // get groups the user is member of or requested membership
   $res=db_query("select gpg.gruppe_id, status_no from {cdb_gemeindeperson_gruppe} gpg, {cdb_gemeindeperson} gp
          where gpg.gemeindeperson_id=gp.id and gp.person_id=$user->id");
   $mygroups=array();
@@ -438,34 +494,33 @@ function subscribeGroup() {
     $mygroups[$p->gruppe_id]=$p;
   }
   
-  // Hole nun alle offenen Gruppen
+  // get all open groups
   $res=db_query("select * from {cdb_gruppe} p where offen_yn=1 and 
                        ((abschlussdatum is null) or (DATE_ADD( abschlussdatum, INTERVAL 1  DAY ) > NOW( )))");
   $txt="";
   $txt_subscribe="";  
   $txt_unsubscribe="";  
   foreach ($res as $g) {
-    // Nehmen Gruppe wo ich nicht drin bin
+    // groups i am not member of
     if ((!isset($mygroups[$g->id])) || ($mygroups[$g->id]->status_no==-1)) {
       if (($g->max_teilnehmer==null) || (churchdb_countMembersInGroup($g->id)<$g->max_teilnehmer)) {  
         $txt_subscribe.="<option value=\"".$g->id."\">".$g->bezeichnung;       
         if ($g->max_teilnehmer!=null)
           $txt_subscribe.=" (max. $g->max_teilnehmer)";
-        
       }
     }
-    // Nehmen Gruppe wo ich drin 
+    // groups i am member of 
     else if ($mygroups[$g->id]->status_no<=0) {      
       $txt_unsubscribe.='<option value="'.$g->id.'">'.$g->bezeichnung;             
       if ($mygroups[$g->id]->status_no==-2) 
         $txt_unsubscribe.="  [beantragt]";
     }
   }
-  if (($txt_subscribe!="") || ($txt_unsubscribe)) {    
+  if (($txt_subscribe) || ($txt_unsubscribe)) {    
     $txt='<form method="GET" action="?q=home">';
-    if ($txt_subscribe!="")
+    if ($txt_subscribe)
       $txt.='<p>'.t("apply.for.group.membership").':<p><select name="subscribegroup"><option>'.$txt_subscribe.'</select>';
-    if ($txt_unsubscribe!="")
+    if ($txt_unsubscribe)
       $txt.='<p>'.t("quit.group.membership").':<p><select name="unsubscribegroup"><option>'.$txt_unsubscribe.'</select>';
     $txt.='<P><button class="btn" type="submit" name="btn">'.t("send").'</button>';
     $txt.='</form>';
@@ -553,6 +608,11 @@ function churchdb_getBlockLookPerson() {
   return $txt;
 }
 
+/**
+ * get array with several content blocks (for start page?)
+ * 
+ * @return array; with metadata + html content
+ */
 function churchdb_blocks() {
   global $config;
   return (array(
@@ -569,7 +629,7 @@ function churchdb_blocks() {
       "html"=>getWhoIsOnline()
     ),  
     3=>array(
-      "label"=>t("admin.my.membership"),
+      "label"=>t("manage.my.membership"),
       "col"=>1,
       "sortkey"=>2,
       "html"=>subscribeGroup()
@@ -589,6 +649,11 @@ function churchdb_blocks() {
     ));
 } 
 
+/**
+ * get birthdaylist
+ * 
+ * @return string; html
+ */
 function churchdb__birthdaylist() {
   $txt="<ul>".getBirthdaylistContent(t("last.x.days", 7),-7,-1, true).
 	          getBirthdaylistContent(t("today"),0, 0, true).
@@ -600,7 +665,9 @@ function churchdb__birthdaylist() {
 }  
 
 
-
+/**
+ * get VCard (send header and echo result)
+ */
 function churchdb__vcard() {
   $id=$_GET["id"];
   drupal_add_http_header('Content-type','text/x-vCard; charset=ISO-8859-1; encoding=ISO-8859-1',true);
@@ -627,7 +694,13 @@ function churchdb__vcard() {
   echo $person->vcard;
 }
   
-
+/**
+ * optimize person data for export
+ * 
+ * @param unknown $arr
+ * 
+ * @return Ambigous <number, string>
+ */
 function _export_optimzations($arr) {
   if (isset($arr["geburtsdatum"])) {
     $dt = new DateTime($arr["geburtsdatum"]);
@@ -660,11 +733,13 @@ function _getExportTemplateByName($templatename=null) {
 }
 
 /**
- * Export Data preparation
- * @param string $ids null for all or comma separated list
- * @param string $template when null, export everything that is possible
+ * prepare person data for export
+ * 
+ * @param string $ids; null for all or comma separated list
+ * @param string $template; when null, export everything that is possible
  * @throws Exception
- * @return multitype:NULL Ambigous <unknown, number, string>
+ * 
+ * @return array
  */
 function _getPersonDataForExport($person_ids=null, $template=null) {
   global $user;
@@ -674,9 +749,9 @@ function _getPersonDataForExport($person_ids=null, $template=null) {
     $ids=explode(",", $person_ids);
   }
   
-    // Check allowed persons
+  // Check allowed persons
   $ps=churchdb_getAllowedPersonData();
-  $bereich=churchcore_getTableData("cdb_bereich");
+  $departments=churchcore_getTableData("cdb_bereich");
   $status=churchcore_getTableData("cdb_status");
   $station=churchcore_getTableData("cdb_station");
   $export=array();
@@ -684,9 +759,9 @@ function _getPersonDataForExport($person_ids=null, $template=null) {
     if ($ids==null || in_array($p->p_id, $ids)) {
       $detail=churchdb_getPersonDetails($p->p_id, false);
       $detail->bereich="";
-      $bereiche=array();
+      $departments=array();
       foreach ($p->access as $dep_id) {
-        $bereiche[]=$bereich[$dep_id]->bezeichnung;
+        $departments[]=$department[$dep_id]->bezeichnung;
       }
       $detail->bereich_id=implode('::', $bereiche);
       $detail->station_id=$station[$detail->station_id]->bezeichnung;
@@ -770,6 +845,9 @@ function _addGroupRelationDataForExport($export, $template=null) {
   return $export;
 }
 
+/**
+ * export data (send header and echo result)
+ */
 function churchdb__export() {
   drupal_add_http_header('Content-type', 'application/csv; charset=ISO-8859-1; encoding=ISO-8859-1',true);
   drupal_add_http_header('Content-Disposition', 'attachment; filename="churchdb_export.csv"',true);
@@ -786,8 +864,8 @@ function churchdb__export() {
   
   $export=_addGroupRelationDataForExport($export, $template);
   
-  // Hier werden wenn nach Beziehung gefiltert wird auch noch die verknuepften Personen
-  // mitgeladen und exportiert.
+  // if filtered by relations, load and export linked persons too 
+  //FIXME: unsanitized get data inserted in sql query! change to use :var syntax with params!
   foreach ($export as $key=>$entry) { 
     if ((isset($params["rel_part"])) && ($params["rel_part"]!=null) && ($params["rel_id"]!=null)) {
       $id=null;
@@ -800,7 +878,7 @@ function churchdb__export() {
         $rel=db_query("select * from {cdb_beziehung} where beziehungstyp_id=".$params["rel_id"]." and kind_id=".$key)->fetch();
         $id=$rel->vater_id;
       }
-      // Wenn wirklich eine Beziehung gefunden wurde
+      // if relation to additional person found
       if ($id!=null && !isset($export[$id])) {
         $person = _getPersonDataForExport($id, $template);
         if ($person!=null && isset($person[$id])) {
@@ -812,32 +890,32 @@ function churchdb__export() {
     }
   }
 
-  // Now we check for relations and aggregate these data sets, if parameter agg is specified 
+  // check for relations and aggregate data sets, if parameter agg is specified 
   $rels=getAllRelations();
   if ($rels!=null) {
     $rel_types=getAllRelationTypes();
     foreach ($rels as $rel) {
       if ((isset($params["agg".$rel->typ_id])) && ($params["agg".$rel->typ_id]=="y") && (isset($export[$rel->v_id])) && (isset($export[$rel->k_id]))) {
-        // We take man as the first one, if available
+        // use the male as first person, if available
         if (!isset($export[$rel->v_id]["anrede2"]) || $export[$rel->v_id]["anrede2"]=="Lieber") {
           $p1=$rel->v_id; $p2=$rel->k_id;
         } else {
           $p1=$rel->k_id; $p2=$rel->v_id;
         }
-        // Fuegen dem Mann die andere zuerst zu
+        // add second to the male
         $export[$p1]["anrede"]=$rel_types[$rel->typ_id]->export_title;
         if (isset($export[$p1]["anrede2"]) && (isset($export[$p2]["anrede2"])))
           $export[$p1]["anrede2"]=$export[$p2]["anrede2"]." ".$export[$p2]["vorname"].", ".$export[$p1]["anrede2"];
         $export[$p1]["vorname2"]=$export[$p2]["vorname"];
         if (isset($export[$p2]["email"]))
           $export[$p1]["email_beziehung"]=$export[$p2]["email"];
-        // Und nehmen den anderen aus dem Export raus
+        // remove second from export data
         $export[$p2]=null;
       }   
     }
   }
 
-  // Now check if there is group_id which I can add group relation Infos to the export
+  // check if there is a group given to add information about to export data
   if (isset($params["groupid"])) {
     foreach ($export as $k=>$key) {
       $r=db_query("select g.bezeichnung, s.bezeichnung status, DATE_FORMAT(gpg.letzteaenderung, '%d.%m.%Y') letzteaenderung, gpg.comment 
@@ -857,18 +935,14 @@ function churchdb__export() {
   }
   
  
-  // Nun werden die Daten ueber Echo ausgegeben
+  // echo data
   $header=true;
   
   // Get all available columns
   $cols=array();
-  foreach ($export as $key=>$row) {
-    if ($row!=null) {
-      foreach ($row as $a=>$val) {
-        if ($val!=null && $val!="" && gettype($val)!="object" && gettype($val)!="array") 
-          $cols[$a]=$a;
-      }
-    }
+  foreach ($export as $key=>$row) if ($row!=null) {
+    foreach ($row as $a=>$val) if ($val!=null && $val!="" && gettype($val)!="object" && gettype($val)!="array") 
+      $cols[$a]=$a;
   }
   
   // Add header
@@ -877,10 +951,8 @@ function churchdb__export() {
     $res=db_query($sql, array(":db_spalte"=>$col))->fetch();
     if (!$res) {
       $txt=t($col);
-      if (substr($txt,0,3)!="***")
-        echo mb_convert_encoding('"'.$txt.'";', 'ISO-8859-1', 'UTF-8');
-      else
-        echo mb_convert_encoding('"'.$col.'";', 'ISO-8859-1', 'UTF-8');
+      if (substr($txt,0,3)!="***") echo mb_convert_encoding('"'.$txt.'";', 'ISO-8859-1', 'UTF-8');
+      else echo mb_convert_encoding('"'.$col.'";', 'ISO-8859-1', 'UTF-8');
     }
     else
       echo mb_convert_encoding('"'.$res->langtext.'";', 'ISO-8859-1', 'UTF-8');
@@ -907,26 +979,26 @@ function churchdb__export() {
   usort($export, "sort_export_func");
     
   // Add all data rows    
-  foreach ($export as $row) {
-    if ($row!=null) {
-      foreach ($cols as $col) {
-        if (isset($row[$col]))
-          echo mb_convert_encoding('"'.$row[$col].'";', 'ISO-8859-1', 'UTF-8');
-        else echo ";";    
-      }
-      echo "\n";
-    }  
-  }
+  foreach ($export as $row) if ($row!=null) {
+    foreach ($cols as $col) {
+      if (isset($row[$col])) echo mb_convert_encoding('"'.$row[$col].'";', 'ISO-8859-1', 'UTF-8');
+      else echo ";";    
+    }
+    echo "\n";
+  }  
 }
 
-
+/**
+ * view mails
+ * 
+ * @return string; html
+ */
 function churchdb__mailviewer() {
   global $user, $config;
   if ((!user_access("view","churchdb")) || ($user->email=="")) return t("no.permission.for", $config["churchdb_name"]);
   
   $limit=200;
-  if (isset($_GET["showmore"]))
-    $limit=1000;
+  if (isset($_GET["showmore"])) $limit=1000;
     
   if (user_access("administer settings", "churchcore"))
     $filter="1=1";
@@ -963,9 +1035,9 @@ function churchdb__mailviewer() {
   if ($res!=false)
   foreach ($res as $arr) {
     $txt.="<tr><td>";
-    if ($arr->send_date!=null)
-      if ($arr->error==0) $txt.='<img title="'.$arr->send_date.'" style="max-width:20px;" src=CHURCHCORE."/images/check-64.png"/>';
-      else $txt.='<img title="'.$arr->send_date.'" style="max-width:20px;" src=CHURCHCORE."/images/delete_2.png"/>';
+    if ($arr->send_date!=null) //TODO: add {} for better understanding
+      if ($arr->error==0) $txt.='<img title="'.$arr->send_date.'" style="max-width:20px;" src="'.CHURCHCORE.'"/images/check-64.png"/>';
+      else $txt.='<img title="'.$arr->send_date.'" style="max-width:20px;" src="'.CHURCHCORE.'"/images/delete_2.png"/>';
       $txt.="<td>$arr->modified_date<td>$arr->receiver<td>$arr->sender<td><a href=\"?q=churchdb/mailviewer&id=$arr->id\">$arr->subject</a>";
       $txt.="<td>$arr->reading_count";
     $counter++;
@@ -982,15 +1054,16 @@ function churchdb__mailviewer() {
   }
   
   $txt.='</table>';
-  if ((!isset($_GET["showmore"])) && ($counter>=$limit))
+  if (!isset($_GET["showmore"]) && $counter>=$limit)
     $txt.='<a href="?q=churchdb/mailviewer&showmore=true" class="btn">Mehr Zeilen anzeigen</a> &nbsp; ';
-    
-
+  
   return $txt;
 }
 
 
-
+/**
+ * cron job
+ */
 function churchdb_cron() {
   global $config;
   include_once("churchdb_db.inc");
@@ -998,9 +1071,9 @@ function churchdb_cron() {
   
   createGroupMeetings();
   
-  // Loesche nichtbenutze Tags
+  // delete tags
   
-  // Schaue in Services, dass sie auch wirklich nicht verwendet werden!
+  // get tags used by churchservices
   $services=churchcore_getTableData('cs_service','','cdb_tag_ids is not null');
   $tag=array();
   if ($services!=false) {
@@ -1015,17 +1088,18 @@ function churchdb_cron() {
   $res=db_query("SELECT * FROM {cdb_tag} t LEFT JOIN {cdb_gemeindeperson_tag} gpt ON ( t.id = gpt.tag_id )
   					LEFT JOIN {cdb_gruppe_tag} gt ON ( t.id = gt.tag_id )
                 WHERE gpt.tag_id IS NULL AND gt.tag_id IS null");
-  foreach($res as $id) {
-    if (!isset($tag[$id->id])) {
-      db_query("delete from {cdb_tag} where id=:id", array(":id"=>$id->id));
-      cdb_log("CRON - Loesche Tag Id:".$id->id." ".$id->bezeichnung.", da nicht verwendet",2);
-    }    
+  // delete unused ones
+  foreach($res as $id) if (!isset($tag[$id->id])) {
+    //TODO this sort of query is for reusing prepared statements - but probably no importend speed advantage to change it :-)
+    db_query("delete from {cdb_tag} where id=:id", array(":id"=>$id->id)); 
+    cdb_log("CRON - Loesche Tag Id:".$id->id." ".$id->bezeichnung.", da nicht verwendet",2);
   }
-  
+
+  // reset login error count for all persons
   db_query("update {cdb_person} set loginerrorcount=0");     
 
   
-  // R�ume MAilarchiv auf
+  // clean mail archive
   db_query("delete FROM {cc_mail_queue}
     WHERE (DATE_ADD( modified_date, INTERVAL 30  DAY ) < NOW( ))
     and send_date is not null
@@ -1040,8 +1114,7 @@ function churchdb_cron() {
   
   
   // Synce MailChimp
-  if ($config["churchdb_mailchimp_apikey"]!="") {
-
+  if (!empty($config["churchdb_mailchimp_apikey"])) {
     include_once(ASSETS."/mailchimp-api-class/inc/MCAPI.class.php");
     $api = new MCAPI($config["churchdb_mailchimp_apikey"]);
     $list_id=null;
@@ -1049,7 +1122,7 @@ function churchdb_cron() {
 
     foreach ($db as $lists) {
       $list_id=$lists->mailchimp_list_id;
-      // Holle alle, die subscribed sind, aber nicht mehr in der Gruppe sind
+      // get all subscribers not beeing in the group anymore
       $db_g=db_query("select * from 
                    (select * from {cdb_gruppe_mailchimp_person} m where 
                         m.mailchimp_list_id='$list_id' and gruppe_id=:g_id) as m 
@@ -1065,7 +1138,7 @@ function churchdb_cron() {
       }
       listBatchUnsubscribe($api, $list_id, $batch, $lists->goodbye_yn==1, $lists->notifyunsubscribe_yn==1);    
       
-      // Holle alle, die noch nicht subscribed worden sind, also die noch nicht in der Tabel cdb_gruppe_mailchimp_personen sind
+      // get persons nto yet subscribed (not in table cdb_gruppe_mailchimp_personen)
       $db_g=db_query("select * from (select p.id p_id, p.vorname, p.name, p.email p_email, gpg.gruppe_id g_id from {cdb_gemeindeperson} gp, {cdb_person} p, {cdb_gemeindeperson_gruppe} gpg
                 where gp.person_id=p.id and gpg.gemeindeperson_id=gp.id and gpg.status_no>=0 and p.email!='' 
                  and gpg.gruppe_id=$lists->gruppe_id) as t 
@@ -1083,7 +1156,7 @@ function churchdb_cron() {
     }
   }
 
-  // L�sche auch die alten Mails raus
+  // delete old mails
   db_query("delete from {cc_mail_queue} where send_date is not null and datediff(send_date, now())<-60");
 
   // Do Statistics
@@ -1109,18 +1182,38 @@ function churchdb_cron() {
   }
 }
 
+/**
+ * subscribe all persons in $batch to $list_id
+ * 
+ * @param object $api
+ * @param string $list_id
+ * @param array $batch
+ * @param bool $optin
+ */
 function listBatchSubscribe($api, $list_id, $batch, $optin=true) {
-  if (count($batch)==0) return null;
-  $up_exist = false; // yes, update currently subscribed users
-  $replace_int = false; // no, add interest, don't replace
-  $vals = $api->listBatchSubscribe($list_id,$batch,$optin, $up_exist, $replace_int);
+  if (count($batch)==0) return;
+  
+  $update_existing = false; // yes, update currently subscribed users TODO: should be replaced by speaking constants
+  $replace_interests = false; // no, add interest, don't replace
+  $vals = $api->listBatchSubscribe($list_id,$batch,$optin, $update_existing, $replace_interests);
   include_once("churchdb_db.inc");
   if ($api->errorCode)
     cdb_log("CRON - Fehler beim Subscribe zu MailChimp: Code=".$api->errorCode. " Msg=".$api->errorMessage,2);
   else cdb_log("CRON - MailChimp-Liste $list_id: Addiere ".count($batch)." Personen.",2);  
 }
+
+/**
+ * unsubscribe all persons in $batch from $list_id
+ * 
+ * @param string $api
+ * @param string $list_id
+ * @param array $batch
+ * @param bool $send_goodbye
+ * @param bool $send_notify
+ */
 function listBatchUnsubscribe($api, $list_id, $batch, $send_goodbye=false, $send_notify=false) {
-  if (count($batch)==0) return null;
+  if (count($batch)==0) return;
+  
   $delete_member=false; // flag to completely delete the member from your list instead of just unsubscribing, default to false
   $vals = $api->listBatchUnsubscribe($list_id,$batch,$delete_member, $send_goodbye, $send_notify);
   include_once("churchdb_db.inc");

@@ -11,7 +11,7 @@ try {
   if (! version_compare ( PHP_VERSION, '5.3.0', '>=' )) {
     throw new Exception ( "Software requires PHP version 5.3.0 or newer" );
   }
-  
+  //TODO: find a good place for constants.php
   require ("system/includes/constants.php");
   include_once (INCLUDES."/start.php");
   churchtools_main ();

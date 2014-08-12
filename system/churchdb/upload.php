@@ -1,5 +1,16 @@
 <?php
 
+/** content of file seems the same as churchcore/uploadfile.php
+ * may be replaced by following function, but seems to be not needed at al
+ */
+
+/*
+function churchdb__uploadfile() {
+  include_once(CHURCHCORE .'/uploadFile.php');
+  churchcore__uploadfile();
+}
+*/
+
 /**
  * Handle file uploads via XMLHttpRequest
  */

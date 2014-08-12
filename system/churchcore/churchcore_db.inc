@@ -171,7 +171,7 @@ abstract class CTAbstractModule implements CTModuleInterface {
   } 
   
   public function getModulePath() {
-    return drupal_get_path('module', $this->modulename);
+    return constant(strtoupper($this->modulename));
   }
   
   public function deleteMasterData($params) {
@@ -410,6 +410,15 @@ class CTException extends Exception {
   }
   
   /**
+   * report error with styling 
+   * 
+   * TODO: integrate error into a CT website template
+   */
+  public function reportError() {
+      return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
+  }
+  
+  /**
    * string representation adapted 
    */
   public function __toString() {
@@ -422,7 +431,7 @@ class CTException extends Exception {
  *
  * Exception for handling lightweight errors, like DB record already exists
  * 
- * TODO: rename to FailException?
+ * TODO: rename to CTWarnException?
  *
  */
 class CTFail extends Exception {
@@ -450,43 +459,30 @@ class CTFail extends Exception {
  * Exception for handling missed permissions
  * 
  * TODO: change name, e.g. to CTRightsException?
- * rather then auth / modulename create message in constructor and put it in $message?
  */
 class CTNoPermission extends CTFail {
   
-  protected $auth = null;
-  protected $modulename = '';
-
   /**
-   * 
-   * @param unknown $auth
+   * @param string $auth
    * @param string $modulename
    */
   public function __construct($auth, $modulename) {
-    $this->auth=$auth;
-    $this->modulename=$modulename;
-    parent::__construct($this, 0);
+    parent::__construct( t('no.sufficient.permission', "$auth ($modulename)"));
   }
   
-  /**
-   * string representation adapted 
-   */  
-  public function __toString() {
-    return t('no.sufficient.permission', "$this->auth ($this->modulename)");
-  }
-}
-
-
 /**
- * The ajax handler needs the modulname.
+ * Handles Ajax calls
  * 
- * Usage: addFunction(NameOfFunction, Right or Null)
+ * Add as much functions as you want. 
+ * The wished function for call has to be specified in the get or post varible $func
+ * using call() and returns jsend()->success().
+ * 
+ * Usage: addFunction(Function, Right or Null, $auth_module_name ) 
+ * 
  * Example:
  *   $ajax = new CTAjaxHandler($module);
  *   $ajax->addFunction("getCalEvents", "view"); 
  *   $ajax->call();
- * 
- * Later you simply use call(). The function is called and returns jsend()->success().
  */
 class CTAjaxHandler {
   private $modulename="church";
@@ -964,7 +960,7 @@ function churchcore_mail($from, $to, $subject, $content, $htmlmail=false, $witht
       if (file_exists("$files_dir/mailtemplate.html"))
         $body=file_get_contents("$files_dir/mailtemplate.html");
       else  
-        $body=file_get_contents("system/includes/mailtemplate.html");
+        $body=file_get_contents(INCLUDES."/mailtemplate.html");
     }
     else $body="%content";
   }
@@ -974,7 +970,7 @@ function churchcore_mail($from, $to, $subject, $content, $htmlmail=false, $witht
       if (file_exists("$files_dir/mailtemplate.plain"))
         $body=file_get_contents("$files_dir/mailtemplate.plain");
       else  
-        $body=file_get_contents("system/includes/mailtemplate.plain");
+        $body=file_get_contents(INCLUDES."/mailtemplate.plain");
     }
     else $body="%content";
   }
@@ -1281,7 +1277,7 @@ function checkForDBUpdates() {
   if ($db_version == $software_version)
     return true;
 
-  include_once("system/includes/db_updates.php");
+  include_once(INCLUDES."/db_updates.php");
   return run_db_updates($db_version);
 }
 
@@ -1324,16 +1320,18 @@ function churchcore_sort (&$array, $key) {
 }
 
 /**
- * TODO: $m is not used, function does nothing, without it
- *   include_once(drupal_get_path('module', 'churchresource') .'/churchresource_db.inc'); becomes
- *   include_once("system/churchresource/churchresource_db.inc');
- *   
- * @param unknown $m
- * @param unknown $module
+ * Joins an array
+ * @param unknown $arr
+ * @param unknown $joiner like "::"
+ * @param unknown $field like "bezeichnung"
  * @return string
  */
-function drupal_get_path($m, $module) {
-  return "system/".$module."";
+function implode_array($arr, $joiner, $field) {
+  $res=array();
+  foreach ($arr as $a) {
+    $res[]=$a->$field;
+  }
+  return implode($res, $joiner);
 }
 
 function drupal_add_css($str) {
@@ -1371,47 +1369,30 @@ function drupal_json_output($mixed) {
 
 /**
  * read data from DB
- * 
+ *
  * @param string $tablename
- * @param string $sql_order
- * @param string $sql_where
- * @param string $sql_cols
- * 
+ * @param string $sql_order, default ""
+ * @param string $sql_where, default ""
+ * @param string $sql_cols, default "*"
+ *
  * @return object
  */
 function churchcore_getTableData($tablename, $sql_order="", $sql_where="", $sql_cols="*") {
-  if (!empty($sql_order)) $sql_order=" ORDER BY ".$sql_order;
-  $res = db_query("SELECT $sql_cols FROM `{".$tablename."}` ".($sql_where==""?"":"WHERE $sql_where")." $sql_order");
+  $res = db_query("SELECT $sql_cols FROM `{".$tablename."}` ".
+      (!empty($sql_where) ? "WHERE $sql_where" : "").
+      (!empty($sql_order) ? " ORDER BY $sql_order" : ""));
   $arrs=null;
+  //if result has an id use it as array key
   foreach ($res as $arr) {
-    if (isset($arr->id))
-      $arrs[$arr->id]=$arr;
-    else  
-      $arrs[]=$arr;
+    if (isset($arr->id)) $arrs[$arr->id]=$arr;
+    else $arrs[]=$arr;
   }
-  return $arrs; 
+  return $arrs;
 }
 
-/**
- * read data from DB
- * 
- * TODO: used only once:   $ressources=churchcore_getTableDataSorted("cr_resource","resourcetype_id,sortkey,bezeichnung");
- * 
- * @param string $tablename
- * @param string  $sortkey
- * 
- * @return object
- */
-function churchcore_getTableDataSorted($tablename, $sortkey) {
-  $res = db_query("SELECT * FROM {".$tablename."} ORDER BY $sortkey");
-  foreach ($res as $arr) {
-    $arrs[$arr->id]=$arr;       
-  }
-  return $arrs; 
-}
+
 
 /**
-on
  * 
  * @param unknown $domain_type
  * @return object
@@ -1544,20 +1525,18 @@ function churchcore_getUserById($id) {
   else return null;  
 }
 
-
 /**
- * get user ids from DB
+ * get user id(s) by loginname from DB 
  * 
- * @param unknown_type $CMSID
+ * @param string $loginname username
  * @param bool $multiple, if false return first user, else return comma separated list
- * @return one or more ids, null if none found
+ *
+ * @return int or array with ids, null if none found 
  */
-function churchcore_getUserByCMSId($CMSID, $multiple=false) {
-  $sql="select id from {cdb_person} where cmsuserid='$CMSID'";
+function churchcore_getUserByCMSId($loginname, $multiple=false) {
   if (!$multiple) {
-    if ($obj=db_query($sql)->fetch())
-      return $obj->id;
-    else return null;  
+    $obj=db_query("select id from {cdb_person} where cmsuserid='$loginname'")->fetch();
+    return !empty($obj) ? $obj->id : null;
   }
   else {
     $obj=db_query($sql);
@@ -1565,9 +1544,7 @@ function churchcore_getUserByCMSId($CMSID, $multiple=false) {
     foreach ($obj as $p) {
       $res[]=$p->id;
     }
-    if (count($res)>0)
-      return $res;
-    else return null;  
+    return count($res)>0 ? $res : null;
   }
 }
 
@@ -1866,6 +1843,18 @@ function isFullDay($start, $end) {
   if (($start->format('H:i:s')=="00:00:00") && ($end==null || $end->format('H:i:s')=="00:00:00"))
     return true;
   return false;  
+}
+
+/**
+ * Return is s1 and s2 is same day
+ * @param String $s1 - english format
+ * @param String $s2 - english format
+ * @return boolean
+ */
+function churchcore_isSameDay($s1, $s2) {
+  $d1=churchcore_stringToDateTime($s1);
+  $d2=churchcore_stringToDateTime($s2);
+  return $d1->format("Ymd")==$d2->format("Ymd");
 }
 
 function datesInConflict($startdate, $enddate, $startdate2, $enddate2) {
@@ -2223,7 +2212,7 @@ function addAuth($auth_arr, $id, $auth, $modulename, $datafield, $desc, $adminal
   if (isset($auth_arr[$id]))
     throw new CTException("Auth ID $id already set!");
   $o=new stdClass();
-  $o->id=$id;
+  $o->id=$id; 
   $o->auth=$auth;
   $o->modulename=$modulename;
   $o->datenfeld=$datafield;
@@ -2233,14 +2222,22 @@ function addAuth($auth_arr, $id, $auth, $modulename, $datafield, $desc, $adminal
   return $auth_arr;
 }
 
+
+/**
+ * put into auth class CTChurchAuthModule?
+ * used by churchdb_getAuthTable()
+ * 
+ * @return array
+ */
 function getAuthTable() {
   $modules=churchcore_getModulesSorted(true, false);
   $auth=array();
   $sortkey=0;
   foreach ($modules as $module) {
-    include_once("system/$module/$module.php");
+    include_once(constant(strtoupper($module))."/$module.php");
     if (function_exists($module."_getAuth")) {
       $res=call_user_func($module."_getAuth");
+      //add sortkey to entries
       foreach ($res as $key=>$val) {
         $val->sortkey=$sortkey;
         $sortkey++;
@@ -2356,6 +2353,8 @@ function escape_string($str) {
 
 /**
  * Connect to the MySQL database.
+ * 
+ * used by churchtools_main()
  */
 function db_connect() {
     global $config, $db_pdo;
@@ -2363,7 +2362,7 @@ function db_connect() {
         $db_pdo = new PDO("mysql:host=${config["db_server"]};dbname=${config["db_name"]};charset=utf8", $config["db_user"], $config["db_password"], array(PDO::ATTR_PERSISTENT => TRUE, PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
     } 
     catch(PDOException $e) {
-        $error_message = "<h3>Database connection error</h3>";
+        $error_message  = "<h3>Database connection error</h3>";
         $error_message .= "<p><strong>Reason: </strong>" . $e->getMessage() . "</p>";
         $error_message .= "<div class='alert alert-info'>";
         $error_message .= "Please edit your default configuration file <code>".$config["_current_config_file"]."</code>, perhaps?";
@@ -2383,6 +2382,7 @@ function db_connect() {
  * @param array $params params in an array
  * @param bool $print_error true=>echo the error message, otherwise SQLException will be thrown 
  * 
+ * @throws SQLException
  * @return object db_accessor
  */
 function db_query($sql, $params=null, $print_error=true) {
