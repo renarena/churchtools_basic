@@ -151,6 +151,6 @@ class DBSync {
 }
 
 $dbsync = new DBSync();
-$dbsync->updateSchema("system/DSL/update/mariadb/");
+$dbsync->updateSchema(SYSTEM."/DSL/update/mariadb/");
 
 ?>

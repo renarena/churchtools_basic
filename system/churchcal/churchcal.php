@@ -15,22 +15,22 @@ function churchcal_main() {
   global $config, $base_url, $config, $embedded;
   include_once(INCLUDES."/forms.php");
   
-  drupal_add_css('system/assets/fullcalendar/fullcalendar.css');
+  drupal_add_css(ASSETS.'fullcalendar/fullcalendar.css');
   if (isset($_GET["printview"]))
-    drupal_add_css('system/assets/fullcalendar/fullcalendar.print.css');
+    drupal_add_css(ASSETS.'/assets/fullcalendar/fullcalendar.print.css');
   
-  drupal_add_css('system/assets/simplecolorpicker/jquery.simplecolorpicker.css');
-  drupal_add_js('system/assets/simplecolorpicker/jquery.simplecolorpicker.js');
+  drupal_add_css(ASSETS.'/simplecolorpicker/jquery.simplecolorpicker.css');
+  drupal_add_js(ASSETS.'/simplecolorpicker/jquery.simplecolorpicker.js');
   
-  drupal_add_js('system/assets/fullcalendar/fullcalendar.min.js');
+  drupal_add_js(ASSETS.'/fullcalendar/fullcalendar.min.js');
   
   drupal_add_js(CHURCHCORE .'/cc_abstractview.js'); 
   drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 
   drupal_add_js(CHURCHCORE .'/cc_maintainstandardview.js'); 
-  drupal_add_js('system/churchcal/eventview.js');
-  drupal_add_js('system/churchcal/yearview.js');
-  drupal_add_js('system/churchcal/calendar.js');
-  drupal_add_js('system/churchcal/cal_sources.js');
+  drupal_add_js(CHURCHCAL.'/eventview.js');
+  drupal_add_js(CHURCHCAL.'/yearview.js');
+  drupal_add_js(CHURCHCAL.'/calendar.js');
+  drupal_add_js(CHURCHCAL.'/cal_sources.js');
   
   drupal_add_js(createI18nFile("churchcore"));
   drupal_add_js(createI18nFile("churchcal"));

@@ -21,14 +21,14 @@ function churchauth_main() {
   		return " ";
   }
    
-  drupal_add_css('system/assets/fileuploader/fileuploader.css');
+  drupal_add_css(ASSETS.'/fileuploader/fileuploader.css');
    
-  drupal_add_js('system/bootstrap/js/bootstrap-multiselect.js');
-  drupal_add_js('system/assets/fileuploader/fileuploader.js');
-  drupal_add_js('system/assets/js/jquery.history.js');
+  drupal_add_js(BOOTSTRAP.'/js/bootstrap-multiselect.js');
+  drupal_add_js(ASSETS.'/fileuploader/fileuploader.js');
+  drupal_add_js(ASSETS.'/js/jquery.history.js');
    
-  drupal_add_css('system/assets/dynatree/ui.dynatree.css');
-  drupal_add_js('system/assets/dynatree/jquery.dynatree-1.2.4.js');
+  drupal_add_css(ASSETS.'/dynatree/ui.dynatree.css');
+  drupal_add_js(ASSETS.'/dynatree/jquery.dynatree-1.2.4.js');
    
   drupal_add_js(CHURCHCORE .'/churchcore.js');
   drupal_add_js(CHURCHCORE .'/churchforms.js');

@@ -109,19 +109,19 @@ function churchdb_main() {
   
   global $user;
   //drupal_add_css(CHURCHCORE.'/churchcore_bootstrap.css');
-  drupal_add_css('system/assets/fileuploader/fileuploader.css'); 
-  drupal_add_css('system/assets/dynatree/ui.dynatree.css');
+  drupal_add_css(ASSETS.'/fileuploader/fileuploader.css'); 
+  drupal_add_css(ASSETS.'/dynatree/ui.dynatree.css');
   
-  drupal_add_js('system/assets/flot/jquery.flot.min.js'); 
-  drupal_add_js('system/assets/flot/jquery.flot.pie.js'); 
-  drupal_add_js('system/assets/js/jquery.history.js'); 
+  drupal_add_js(ASSETS.'/flot/jquery.flot.min.js'); 
+  drupal_add_js(ASSETS.'/flot/jquery.flot.pie.js'); 
+  drupal_add_js(ASSETS.'/js/jquery.history.js'); 
 
-  drupal_add_js('system/assets/ui/jquery.ui.slider.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.slider.min.js');
   
-  drupal_add_js('system/assets/fileuploader/fileuploader.js'); 
+  drupal_add_js(ASSETS.'/fileuploader/fileuploader.js'); 
   
-  drupal_add_js('system/assets/ckeditor/ckeditor.js');
-  drupal_add_js('system/assets/ckeditor/lang/de.js');  
+  drupal_add_js(ASSETS.'/ckeditor/ckeditor.js');
+  drupal_add_js(ASSETS.'/ckeditor/lang/de.js');  
   
   drupal_add_js(CHURCHCORE .'/cc_abstractview.js'); 
   drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 
@@ -221,24 +221,24 @@ function sendConfirmationMail($mail, $vorname="", $g_id) {
 function externmapview_main() {
     
   global $user;
-  drupal_add_css('system/assets/fileuploader/fileuploader.css'); 
+  drupal_add_css(ASSETS.'/fileuploader/fileuploader.css'); 
   drupal_add_js(CHURCHCORE .'/shortcut.js'); 
-  drupal_add_css('system/assets/ui/jquery-ui-1.8.18.custom.css');
+  drupal_add_css(ASSETS.'/ui/jquery-ui-1.8.18.custom.css');
   
-  drupal_add_js('system/assets/js/jquery.history.js'); 
-  drupal_add_js('system/assets/ui/jquery.ui.core.min.js');
-  drupal_add_js('system/assets/ui/jquery.ui.position.min.js');
-  drupal_add_js('system/assets/ui/jquery.ui.widget.min.js');
-  drupal_add_js('system/assets/ui/jquery.ui.autocomplete.min.js');
-  drupal_add_js('system/assets/ui/jquery.ui.dialog.min.js');
-  drupal_add_js('system/assets/ui/jquery.ui.mouse.min.js');
-  drupal_add_js('system/assets/ui/jquery.ui.draggable.min.js');
-  drupal_add_js('system/assets/ui/jquery.ui.resizable.min.js');
+  drupal_add_js(ASSETS.'/js/jquery.history.js'); 
+  drupal_add_js(ASSETS.'/ui/jquery.ui.core.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.position.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.widget.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.autocomplete.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.dialog.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.mouse.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.draggable.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.resizable.min.js');
   
-  drupal_add_js('system/assets/fileuploader/fileuploader.js'); 
+  drupal_add_js(ASSETS.'/fileuploader/fileuploader.js'); 
   
-  drupal_add_js('system/assets/ckeditor/ckeditor.js');
-  drupal_add_js('system/assets/ckeditor/lang/de.js');  
+  drupal_add_js(ASSETS.'/ckeditor/ckeditor.js');
+  drupal_add_js(ASSETS.'/ckeditor/lang/de.js');  
   
   drupal_add_js(CHURCHCORE .'/churchcore.js'); 
   drupal_add_js(CHURCHCORE .'/churchforms.js'); 

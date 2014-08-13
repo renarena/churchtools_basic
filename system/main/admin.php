@@ -36,8 +36,8 @@ function admin_saveSettings($form) {
 function admin_main() {
   global $config;
   
-  drupal_add_css('system/assets/fileuploader/fileuploader.css'); 
-  drupal_add_js('system/assets/fileuploader/fileuploader.js');
+  drupal_add_css(ASSETS.'/fileuploader/fileuploader.css'); 
+  drupal_add_js(ASSETS.'/fileuploader/fileuploader.js');
   
   $model = new CC_Model("AdminForm", "admin_saveSettings");
   $model->addField("site_name","", "INPUT_REQUIRED",t("name.of.website"));

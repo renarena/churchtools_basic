@@ -1,6 +1,7 @@
 <?php
 
-include_once('./'. CHURCHDB .'/../churchcore/churchcore_db.inc');
+include_once('./'. CHURCHDB .'/../churchcore/churchcore_db.inc'); //TODO: could this path be simplified?
+include_once('./'. CHURCHDB .'/../churchcore/churchcore_db.inc'); //TODO: could this path be simplified?
 
 
 /**

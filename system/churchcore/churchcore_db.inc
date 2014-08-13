@@ -116,13 +116,13 @@ function cleanI18nFiles() {
 }
 
 /**
- * TODO: only used one time -> not needed
+ * TODO: only used one time in the short function below -> not really needed
  * 
  * @param string $modulename
  */
 /*function loadI18nFile($modulename) {
   global $config;
-  $i18n = new TextBundle("system/$modulename/resources/messages");
+  $i18n = new TextBundle(SYSTEM."/$modulename/resources/messages");
   $i18n->load($modulename, $config["language"]);
   return $i18n;
 }*/
@@ -144,8 +144,7 @@ function createI18nFile($modulename) {
 
   $filename="$files_dir/files/messages/$modulename"."_".$config["language"].".js";
   if (!file_exists($filename)) {
-//rrr    $i18n=loadI18nFile($modulename)
-    $i18n = new TextBundle("system/$modulename/resources/messages");
+    $i18n = new TextBundle(SYSTEM."/$modulename/resources/messages");
     $i18n->load($modulename, $config["language"]);   
     $i18n->writeJSFile($filename, $modulename);
   }
@@ -176,7 +175,7 @@ abstract class CTAbstractModule implements CTModuleInterface {
   
   public function deleteMasterData($params) {
     if ((user_access("edit masterdata",$this->modulename)) && (churchcore_isAllowedMasterData($this->getMasterDataTablenames(), $params["table"]))) {
-      db_query("delete from {".$params["table"]."} where id=:id", array(":id"=>$params["id"]));
+      db_query("delete from {".$params["table"]."} where id=:id", array(":id"=>$params["id"])); //delete Masterdata
       $this->logMasterData($params);
     }
     else throw new CTNoPermission("edit masterdata", $this->modulename);  
@@ -327,26 +326,24 @@ function ct_notify($domain_type, $domain_id, $txt, $loglevel=2) {
 /**
  * Send pending notifications. 
  * @param string $max_delayhours, can be null for all. 
- * 
- * TODO: rename nts/nt to something readable?
  */
 function ct_sendPendingNotifications($max_delayhours=null) {
-  $nts=churchcore_getTableData("cc_notificationtype", "delay_hours", ($max_delayhours!=null?"delay_hours<=$max_delayhours":""));
+  $notifications=churchcore_getTableData("cc_notificationtype", "delay_hours", ($max_delayhours!=null?"delay_hours<=$max_delayhours":""));
   
-  foreach ($nts as $nt) {
+  foreach ($notifications as $notification) {
     // Check if there is a pending notifications for a person and domain_type  
     $personANDtypes=db_query('select n.person_id, n.domain_type from {cc_notification} n
              where n.notificationtype_id=:nt_id and (lastsenddate is null or
                   (time_to_sec(timediff(now(), lastsenddate)) / 3600)>:delay_hours)
                   group by n.person_id, n.domain_type',
-            array(':nt_id'=>$nt->id, ':delay_hours'=>$nt->delay_hours));
+            array(':nt_id'=>$notification->id, ':delay_hours'=>$notification->delay_hours));
 
     // Collect all notifications in this type for each person and domain_type
     foreach ($personANDtypes as $personANDtype) {
       $notis=db_query('select * from {cc_notification} n 
                 where n.person_id=:person_id and n.notificationtype_id=:nt_id and n.domain_type=:dt_id',
               array(':person_id'=>$personANDtype->person_id, 
-                    ':nt_id'=>$nt->id, 
+                    ':nt_id'=>$notification->id, 
                     ':dt_id'=>$personANDtype->domain_type));
       
       $msg="";
@@ -366,7 +363,7 @@ function ct_sendPendingNotifications($max_delayhours=null) {
           $msg="<h3>Hallo $p->vorname!</h3>".
                "<p>Hier Deine neuen Benachrichtigungen f&uuml;r ".t($personANDtype->domain_type).":</p>".
                "<ul>$msg</ul>".
-               "<p><p><small>Einstellung f&uuml;r Versand: $nt->bezeichnung</small>";
+               "<p><p><small>Einstellung f&uuml;r Versand: $notification->bezeichnung</small>";
           churchcore_systemmail($p->email, "[".variable_get('site_name')."] Neue Abonnement-Benachrichtigung (".t($personANDtype->domain_type).")", $msg, true);
           }
       }
@@ -375,7 +372,7 @@ function ct_sendPendingNotifications($max_delayhours=null) {
       $notis=db_query('update {cc_notification} n set lastsenddate=now()
                 where n.person_id=:person_id and n.notificationtype_id=:nt_id and n.domain_type=:dt_id',
               array(':person_id'=>$personANDtype->person_id, 
-                    ':nt_id'=>$nt->id, 
+                    ':nt_id'=>$notification->id, 
                     ':dt_id'=>$personANDtype->domain_type));
     }    
   }  
@@ -400,7 +397,7 @@ function ct_sendPendingNotifications($max_delayhours=null) {
 class CTException extends Exception {
   
   /**
-   * Here $message is not optional like in php exception
+   * $message is not optional like in php exception
    * 
    * @param string $message
    * @param number $code, default 0
@@ -469,7 +466,9 @@ class CTNoPermission extends CTFail {
   public function __construct($auth, $modulename) {
     parent::__construct( t('no.sufficient.permission', "$auth ($modulename)"));
   }
-  
+}
+
+
 /**
  * Handles Ajax calls
  * 
@@ -553,7 +552,7 @@ class CTAjaxHandler {
       }      
       return jsend()->success(call_user_func($this->getFunctionName($func["name"]), $params));      
     } 
-    // Lightwight error like record already exists, handled later
+    // Lightweight error like record already exists, handled by client
     catch (CTFail $e) {
       return jsend()->fail($e);
     }
@@ -748,7 +747,7 @@ function htmlize($text) {
 /**
  * Create html link
  * 
- * TODO: why not use http_build_query?
+ * TODO: why not use http_build_query instead? Much shorter :-)
  * 
  * @param unknown $name
  * @param unknown $url
@@ -757,10 +756,7 @@ function htmlize($text) {
  * @return string
  */
 function l($name, $url, $params=null) {
-  
-  //$param = $params ? '?'. http_build_query($parameter, '', '&') : '' ;
-  
-  if ($params==null) $param="";
+ /* if ($params==null) $param="";
   else {
     $param="?";
     $first=true;
@@ -769,7 +765,7 @@ function l($name, $url, $params=null) {
       $first=false;
       $param.="$key=$p";
     }
-  }
+  }*/
   
   $params = ($params ? '?'. http_build_query($parameter, '', '&') : '') ;
   return '<a href="'.$url.$param.'">'.$name.'</a>';
@@ -788,7 +784,7 @@ function addErrorMessage($message) {
 /**
  * Add info div with message to $content
  * 
- * TODO: use a constant with content hide_automatically in function calls?
+ * TODO: use a constant with content "hide_automatically" in function calls and the commented code line below
  * 
  * @param string $message
  * @param string $hide, default:false
@@ -1177,11 +1173,11 @@ function churchcore_sendMails($maxmails=10) {
 /**
  * create login string for emails(?) and save it into DB
  * 
- * @param int $id
+ * @param string $id
  * 
  * @return string, login string
  */
-function churchcore_createPersonLoginStr(int $id) {
+function churchcore_createPersonLoginStr($id) {
   $loginstr=random_string(60);
   db_query("update {cdb_person} set loginstr='1' where id=$id and loginstr is null");
   db_query("insert into {cc_loginstr} (person_id, loginstr, create_date) 
@@ -1499,7 +1495,7 @@ function churchcore_renderFile($file) {
 
 function churchcore_renderImage($filename, $width=24) {
   global $base_url;
-  return '<img src="'.$base_url.'/system/churchcore/images/'.$filename.'" style="max-width:'.$width.'px"/>';
+  return '<img src="'.$base_url.CHURCHCORE.'/images/'.$filename.'" style="max-width:'.$width.'px"/>';
   
 }
 
@@ -1690,8 +1686,8 @@ function churchcore_getMyNotifications() {
 function churchcore_saveUserSetting($modulename, $user_pid, $attrib, $val) {
   if (($user_pid==null) || ($user_pid<=0)) return;
   
-  if (gettype($user_pid)=="array") { 
-    foreach ($user_pid as $pid) _churchcore_savePidUserSetting($modulename, $pid, $attrib, $val);
+  if (gettype($user_pid)=="array") foreach ($user_pid as $pid){
+    _churchcore_savePidUserSetting($modulename, $pid, $attrib, $val);
   }
   else  _churchcore_savePidUserSetting($modulename, $user_pid, $attrib, $val);
 }
@@ -1888,10 +1884,8 @@ function churchcore_getAge($date) {
 }
 
 function getAllDatesWithRepeats($r, $_von=-1, $_bis=1) {
-  // $dates later will contain all date occurence.
-  $dates=array();
-  // $max prevents an endless loop on erors
-  $max=999;
+  $dates=array(); // will contain all date occurences.
+  $max=999;       // prevents an endless loop on erors
   
   $from=new DateTime();
   $from->modify("+$_von days");
@@ -2276,7 +2270,7 @@ if (!function_exists('password_hash') && function_exists('crypt')) {
   $hash = '$2y$04$usesomesillystringfore7hnbRJHxXVLeakoG8K30oukPsA.ztMG';
   $test = crypt("password", $hash);
   if ($test == $hash) {
-    require_once('system/assets/password_hash-polyfill/password.php');
+    require_once(ASSETS.'/password_hash-polyfill/password.php');
   }
 }
 

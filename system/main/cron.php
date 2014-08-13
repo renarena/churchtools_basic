@@ -44,7 +44,7 @@ function cron_main() {
         db_query("insert into {cc_config} (name, value) values ('last_cron', UNIX_TIMESTAMP())");
     }  
     header('Content-Type: image/jpeg');
-    echo file_get_contents('system/assets/img/1x1.png');
+    echo file_get_contents(ASSETS.'/img/1x1.png');
   }
   else {
     do_cron();    

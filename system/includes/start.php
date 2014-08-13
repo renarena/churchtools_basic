@@ -16,7 +16,7 @@ $i18n=null;
 $content="";
 $embedded=false;
 $user=null;
-$files_dir="sites/default";
+$files_dir=DEFAULT_SITE;
 
 /** 
  * Shutdown fuction, if an error happened, an error message is displayed. 
@@ -46,15 +46,15 @@ function loadConfig() {
     // WARNING: This code dont works for per IP address access and supports only last subdomain.
     if (strpos($_SERVER["SERVER_NAME"],".") > 0) {
         $subdomain=substr($_SERVER["SERVER_NAME"],0,strpos($_SERVER["SERVER_NAME"],"."));
-        $cnf_location = "sites/$subdomain/churchtools.config";
+        $cnf_location = SITES."/$subdomain/churchtools.config";
         if (file_exists($cnf_location)) {
             $config = parse_ini_file($cnf_location);
-            $files_dir="sites/".$subdomain;
+            $files_dir=SITES."/".$subdomain;
         }
     }
 
     // if no config, read default config
-    $cnf_location = "sites/default/churchtools.config";
+    $cnf_location = DEFAULT_SITE."/churchtools.config";
     if ($config == null && file_exists($cnf_location)) {
         $config = parse_ini_file($cnf_location);
     }
@@ -82,10 +82,10 @@ function loadConfig() {
                 <li>Per-domain appliance: <code>/etc/churchtools/hosts/" . $_SERVER["SERVER_NAME"] . ".conf</code></li>
                 <li>Shared hosting per domain: <code><i>YOUR_INSTALLATION</i>/sites/" . $_SERVER["SERVER_NAME"] . "/churchtools.config</code></li>
                 <li>Hosting per sub-domain: <code><i>YOUR_INSTALLATION</i>/sites/<b>&lt;subdomain&gt;.&lt;domain&gt;</b>/churchtools.config</code></li>
-                <li>Shared hosting default (single installation): <code><i>YOUR_INSTALLATION</i>/sites/default/churchtools.config</code></li>
+                <li>Shared hosting default (single installation): <code><i>YOUR_INSTALLATION</i>/".DEFAULT_SITE."/churchtools.config</code></li>
             </ul>
             <div class=\"alert alert-info\">You can also use <strong>example</strong> file in
-            <code><i>INSTALLATION</i>/sites/default/churchtools.example.config</code> by renaming it to
+            <code><i>INSTALLATION</i>/".DEFAULT_SITE."/churchtools.example.config</code> by renaming it to
             either one location that suits your setup and further editing it accordingly.</div>";
         addErrorMessage($error_message);
     } else {
@@ -115,11 +115,11 @@ function loadDBConfig() {
  * @return array
  */
 function loadMapping() {
-  $mapping=parse_ini_file("system/churchtools.mapping");
+  $mapping=parse_ini_file(SYSTEM."/churchtools.mapping");
   // Load mappings from modules like system/churchdb/churchdb.mapping
   foreach (churchcore_getModulesSorted(true) as $module) {
-    if (file_exists("system/$module/$module.mapping")) {
-      $map=parse_ini_file("system/$module/$module.mapping");
+    if (file_exists(SYSTEM."/$module/$module.mapping")) {
+      $map=parse_ini_file(SYSTEM."/$module/$module.mapping");
       if (isset($map["page_with_noauth"]) && isset($mapping["page_with_noauth"]))
         $map["page_with_noauth"]=array_merge($mapping["page_with_noauth"], $map["page_with_noauth"]); 
       $mapping=array_merge($mapping, $map);
@@ -224,7 +224,7 @@ function churchtools_processRequest($_q) {
 
   // Pr�fe Mapping
   if (isset($mapping[$_q])) {
-    include_once("system/".$mapping[$_q]);
+    include_once(SYSTEM."/".$mapping[$_q]);
     
     $param="main";
     if (strpos($_q,"/")>0) {
@@ -273,7 +273,7 @@ function churchtools_main() {
   $base_url=getBaseUrl();
   
   include_once(CHURCHCORE."/churchcore_db.inc");
-  include_once("system/lib/i18n.php");
+  include_once(SYSTEM."/lib/i18n.php");
   
   $config = loadConfig();
   
@@ -305,7 +305,9 @@ function churchtools_main() {
         addErrorMessage(t("permission.denied.write.dir", $files_dir));
       }
       else {
-        session_save_path($files_dir."/tmp"); // saves the session in /sites/default/tmp ==> this gave an folder not exists error i searched for in php.ini!!!
+        session_save_path($files_dir."/tmp"); 
+        // TODO: saves the session in /sites/default/tmp ==> this gave an folder not exists error i searched for in php.ini!!! 
+        // Shouldnt it be saved in tmp or in the RELATIVE site folder rather then in a root folder?
       }
       session_name("ChurchTools_".$config["db_name"]);
       session_start();    

@@ -106,17 +106,17 @@ function churchreport_main() {
   global $files_dir;
   include_once(INCLUDES."/forms.php");
 
-  drupal_add_js('system/assets/js/jquery.history.js'); 
+  drupal_add_js(ASSETS.'/js/jquery.history.js'); 
   
   drupal_add_js(CHURCHCORE .'/cc_abstractview.js'); 
   drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 
   drupal_add_js(CHURCHCORE .'/cc_maintainstandardview.js'); 
   
-  drupal_add_js('system/assets/pivottable/pivot.js');
-  drupal_add_css('system/assets/pivottable/pivot.css');
+  drupal_add_js(ASSETS.'/pivottable/pivot.js');
+  drupal_add_css(ASSETS.'/pivottable/pivot.css');
     
-  drupal_add_js('system/churchreport/report_maintainview.js');
-  drupal_add_js('system/churchreport/churchreport.js');
+  drupal_add_js(CHURCHREPORT.'/report_maintainview.js');
+  drupal_add_js(CHURCHREPORT.'/churchreport.js');
   
   drupal_add_js(createI18nFile("churchcore"));
   drupal_add_js(createI18nFile("churchreport"));

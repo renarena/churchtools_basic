@@ -135,17 +135,17 @@ function churchservice__printview() {
   global $version, $files_dir, $config, $embedded;
 
 
-  drupal_add_css('system/assets/fileuploader/fileuploader.css');
+  drupal_add_css(ASSETS.'/fileuploader/fileuploader.css');
 
-  drupal_add_js('system/bootstrap/js/bootstrap-multiselect.js');
-  drupal_add_js('system/assets/fileuploader/fileuploader.js');
-  drupal_add_js('system/assets/js/jquery.history.js');
+  drupal_add_js(BOOTSTRAP.'/js/bootstrap-multiselect.js');
+  drupal_add_js(ASSETS.'/fileuploader/fileuploader.js');
+  drupal_add_js(ASSETS.'/js/jquery.history.js');
 
-  drupal_add_js('system/assets/mediaelements/mediaelement-and-player.min.js');
-  drupal_add_css('system/assets/mediaelements/mediaelementplayer.css');
+  drupal_add_js(ASSETS.'/mediaelements/mediaelement-and-player.min.js');
+  drupal_add_css(ASSETS.'/mediaelements/mediaelementplayer.css');
 
-  drupal_add_js('system/assets/ckeditor/ckeditor.js');
-  drupal_add_js('system/assets/ckeditor/lang/de.js');
+  drupal_add_js(ASSETS.'/ckeditor/ckeditor.js');
+  drupal_add_js(ASSETS.'/ckeditor/lang/de.js');
 
   drupal_add_js(CHURCHCORE .'/cc_abstractview.js');
   drupal_add_js(CHURCHCORE .'/cc_standardview.js');
@@ -193,17 +193,17 @@ function churchservice_main() {
   global $version, $files_dir, $config;
   
   
-  drupal_add_css('system/assets/fileuploader/fileuploader.css'); 
+  drupal_add_css(ASSETS.'/fileuploader/fileuploader.css'); 
   
-  drupal_add_js('system/bootstrap/js/bootstrap-multiselect.js'); 
-  drupal_add_js('system/assets/fileuploader/fileuploader.js'); 
-  drupal_add_js('system/assets/js/jquery.history.js'); 
+  drupal_add_js(BOOTSTRAP.'/js/bootstrap-multiselect.js'); 
+  drupal_add_js(ASSETS.'/fileuploader/fileuploader.js'); 
+  drupal_add_js(ASSETS.'/js/jquery.history.js'); 
   
-  drupal_add_js('system/assets/mediaelements/mediaelement-and-player.min.js'); 
-  drupal_add_css('system/assets/mediaelements/mediaelementplayer.css');
+  drupal_add_js(ASSETS.'/mediaelements/mediaelement-and-player.min.js'); 
+  drupal_add_css(ASSETS.'/mediaelements/mediaelementplayer.css');
     
-  drupal_add_js('system/assets/ckeditor/ckeditor.js');
-  drupal_add_js('system/assets/ckeditor/lang/de.js');  
+  drupal_add_js(ASSETS.'/ckeditor/ckeditor.js');
+  drupal_add_js(ASSETS.'/ckeditor/lang/de.js');  
     
   drupal_add_js(CHURCHCORE .'/cc_abstractview.js'); 
   drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 

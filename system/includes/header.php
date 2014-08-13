@@ -8,10 +8,10 @@
     <meta name="author" content="">
 
 	
-    <link href=<?=ASSETS?>/ui/custom-theme/jquery-ui-1.10.3.custom.css" rel="stylesheet">
-    <link href="system/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?=ASSETS?>/ui/custom-theme/jquery-ui-1.10.3.custom.css" rel="stylesheet">
+    <link href="<?=BOOTSTRAP?>/css/bootstrap.min.css" rel="stylesheet">
     <!--  link href="<?=ASSETS?>/ui/jquery-ui-1.8.18.custom.css" rel="stylesheet"-->
-    <link href="system/includes/churchtools.css" rel="stylesheet">
+    <link href="<?=INCLUDES?>/churchtools.css" rel="stylesheet">
     
    <?php if (!$embedded) {?>
     <style>
@@ -22,7 +22,7 @@
     </style>
    <?php } ?>
 
-  <link href="system/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+  <link href="<?=BOOTSTRAP?>/css/bootstrap-responsive.min.css" rel="stylesheet">
    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>

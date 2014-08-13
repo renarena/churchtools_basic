@@ -37,7 +37,7 @@ function home_main() {
     
     foreach ($btns as $key) {
       if ((isset($config[$key."_name"])) && ($config[$key."_name"]!="") && (user_access("view", $key)))  {   
-        include_once(SYSTEM.$mapping[$key]);
+        include_once(SYSTEM.'/'.$mapping[$key]);
         $txt.=  
         '<li><a class="btn btn-large" href="?q='.$key.'">
           '.$config[$key."_name"].'
@@ -51,7 +51,7 @@ function home_main() {
   $blocks=null;
   foreach ($btns as $key) {
     if ((isset($config[$key."_name"])) && ($config[$key."_name"]!="")) {
-      include_once(SYSTEM.$mapping[$key]);
+      include_once(SYSTEM.'/'.$mapping[$key]);
       if (function_exists($key."_blocks")) {
         $arr=call_user_func($key."_blocks");
         foreach ($arr as $block) {
@@ -85,7 +85,7 @@ function home_main() {
     }   
   $txt.='</div>';
       
-  drupal_add_js('system/main/home.js');
+  drupal_add_js(MAIN.'/home.js');
   
   return $txt; 
 }
@@ -218,7 +218,7 @@ function home__memberlist() {
 function home__memberlist_printview() {
   global $base_url, $files_dir, $config;
   //  $content='<html><head><meta http-equiv="Content-Type" content="application/pdf; charset=utf-8" />';
-//   drupal_add_css('system/bootstrap/css/bootstrap.min.css');
+//   drupal_add_css(BOOTSTRAP.'/css/bootstrap.min.css');
 //  drupal_add_css(CHURCHDB.'/cdb_printview.css');
 //  $content=$content.drupal_get_header();
   if (!user_access("view memberliste","churchdb")) { 
@@ -226,7 +226,7 @@ function home__memberlist_printview() {
      return " ";
   }  
 
-  require_once('system/assets/fpdf17/fpdf.php');
+  require_once(ASSETS.'/fpdf17/fpdf.php');
   $compact=true;
   if (isset($_GET["compact"])) $compact=$_GET["compact"];
   
@@ -234,7 +234,7 @@ function home__memberlist_printview() {
     //Kopfzeile
     function Header() {
       //Logo
-//      $this->Image('system/assets/img/ct-icon_256.png',10,8,33);
+//      $this->Image(ASSETS.'/img/ct-icon_256.png',10,8,33);
       //Arial fett 15
       $this->SetFont('Arial','B',9);
       //nach rechts gehen

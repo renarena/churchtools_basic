@@ -334,25 +334,25 @@ function churchwiki_main() {
   global $files_dir;
   include_once(INCLUDES."/forms.php");
 
-  drupal_add_js('system/assets/js/jquery.history.js'); 
+  drupal_add_js(ASSETS.'/js/jquery.history.js'); 
   
-  drupal_add_css('system/assets/fileuploader/fileuploader.css'); 
-  drupal_add_js('system/assets/fileuploader/fileuploader.js'); 
+  drupal_add_css(ASSETS.'/fileuploader/fileuploader.css'); 
+  drupal_add_js(ASSETS.'/fileuploader/fileuploader.js'); 
   
-  drupal_add_js('system/assets/tablesorter/jquery.tablesorter.min.js'); 
-  drupal_add_js('system/assets/tablesorter/jquery.tablesorter.widgets.min.js'); 
+  drupal_add_js(ASSETS.'/tablesorter/jquery.tablesorter.min.js'); 
+  drupal_add_js(ASSETS.'/tablesorter/jquery.tablesorter.widgets.min.js'); 
   
-  drupal_add_js('system/assets/mediaelements/mediaelement-and-player.min.js'); 
-  drupal_add_css('system/assets/mediaelements/mediaelementplayer.css');
+  drupal_add_js(ASSETS.'/mediaelements/mediaelement-and-player.min.js'); 
+  drupal_add_css(ASSETS.'/mediaelements/mediaelementplayer.css');
   
   drupal_add_js(CHURCHCORE .'/cc_abstractview.js'); 
   drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 
   drupal_add_js(CHURCHCORE .'/cc_maintainstandardview.js'); 
   
-  drupal_add_js('system/assets/ckeditor/ckeditor.js');
-  drupal_add_js('system/assets/ckeditor/lang/de.js');
-  drupal_add_js('system/churchwiki/wiki_maintainview.js');
-  drupal_add_js('system/churchwiki/churchwiki.js');
+  drupal_add_js(ASSETS.'/ckeditor/ckeditor.js');
+  drupal_add_js(ASSETS.'/ckeditor/lang/de.js');
+  drupal_add_js(CHURCHWIKI.'/wiki_maintainview.js');
+  drupal_add_js(CHURCHWIKI.'/churchwiki.js');
   
   drupal_add_js(createI18nFile("churchcore"));
   drupal_add_js(createI18nFile("churchwiki"));
@@ -382,13 +382,13 @@ function churchwiki__printview() {
   global $files_dir;
   include_once(INCLUDES."/forms.php");
 
-  drupal_add_js('system/assets/js/jquery.history.js'); 
+  drupal_add_js(ASSETS.'/js/jquery.history.js'); 
   
-  drupal_add_css('system/assets/fileuploader/fileuploader.css'); 
-  drupal_add_js('system/assets/fileuploader/fileuploader.js'); 
+  drupal_add_css(ASSETS.'/fileuploader/fileuploader.css'); 
+  drupal_add_js(ASSETS.'/fileuploader/fileuploader.js'); 
   
-  drupal_add_js('system/assets/tablesorter/jquery.tablesorter.min.js'); 
-  drupal_add_js('system/assets/tablesorter/jquery.tablesorter.widgets.min.js'); 
+  drupal_add_js(ASSETS.'/tablesorter/jquery.tablesorter.min.js'); 
+  drupal_add_js(ASSETS.'/tablesorter/jquery.tablesorter.widgets.min.js'); 
   
   drupal_add_js(CHURCHCORE .'/shortcut.js'); 
   
@@ -396,10 +396,10 @@ function churchwiki__printview() {
   drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 
   drupal_add_js(CHURCHCORE .'/cc_maintainstandardview.js'); 
   
-  drupal_add_js('system/assets/ckeditor/ckeditor.js');
-  drupal_add_js('system/assets/ckeditor/lang/de.js');
-  drupal_add_js('system/churchwiki/wiki_maintainview.js');
-  drupal_add_js('system/churchwiki/churchwiki.js');
+  drupal_add_js(ASSETS.'/ckeditor/ckeditor.js');
+  drupal_add_js(ASSETS.'/ckeditor/lang/de.js');
+  drupal_add_js(CHURCHWIKI.'/wiki_maintainview.js');
+  drupal_add_js(CHURCHWIKI.'/churchwiki.js');
   
   $doc_id="main";
   if (isset($_GET["doc"])) $doc_id=$_GET["doc"];

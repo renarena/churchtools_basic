@@ -13,7 +13,7 @@
 
   
 function churchresource_main() {
-  drupal_add_js('system/assets/js/jquery.history.js'); 
+  drupal_add_js(ASSETS.'/js/jquery.history.js'); 
   
   drupal_add_js(CHURCHCORE .'/cc_abstractview.js'); 
   drupal_add_js(CHURCHCORE .'/cc_standardview.js'); 
@@ -170,17 +170,17 @@ global $user;
   drupal_add_js(ASSETS."/js/jquery-migrate-1.2.1.min.js");
   
   drupal_add_js(CHURCHCORE .'/shortcut.js'); 
-  drupal_add_js('system/assets/js/jquery.history.js'); 
+  drupal_add_js(ASSETS.'/js/jquery.history.js'); 
   
-  drupal_add_js('system/assets/ui/jquery.ui.core.min.js');
-  drupal_add_js('system/assets/ui/jquery.ui.datepicker.min.js');
-  drupal_add_js('system/assets/ui/jquery.ui.position.min.js');
-  drupal_add_js('system/assets/ui/jquery.ui.widget.min.js');
-  drupal_add_js('system/assets/ui/jquery.ui.autocomplete.min.js');
-  drupal_add_js('system/assets/ui/jquery.ui.dialog.min.js');
-  drupal_add_js('system/assets/ui/jquery.ui.mouse.min.js');
-  drupal_add_js('system/assets/ui/jquery.ui.draggable.min.js');
-  drupal_add_js('system/assets/ui/jquery.ui.resizable.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.core.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.datepicker.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.position.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.widget.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.autocomplete.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.dialog.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.mouse.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.draggable.min.js');
+  drupal_add_js(ASSETS.'/ui/jquery.ui.resizable.min.js');
   
   drupal_add_js(CHURCHCORE .'/churchcore.js'); 
   drupal_add_js(CHURCHCORE .'/churchforms.js'); 

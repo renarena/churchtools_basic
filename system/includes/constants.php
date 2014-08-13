@@ -3,9 +3,13 @@
  *  constants to use anywhere
  */
 
-define('FILES_DIR', 'sites/default');
+//next two maybe not needed?
+define('SITES', 'sites');
+define('DEFAULT_SITE', SITES.'/default');
+
 define('SYSTEM', 'system');
 define('ASSETS',         SYSTEM.'/assets');
+define('BOOTSTRAP',      SYSTEM.'/bootstrap');
 define('INCLUDES',       SYSTEM.'/includes');
 define('LIB',            SYSTEM.'/lib');
 define('MAIN',           SYSTEM.'/main');

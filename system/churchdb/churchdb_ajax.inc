@@ -571,9 +571,10 @@ global $user;
 }
 
 function saveImage($id, $url) {
+  global $files_dir;
   $p=db_query("select imageurl from {cdb_gemeindeperson} WHERE person_id=:id", array(":id"=>$id))->fetch();
-  if ($p->imageurl!=null && file_exists(SITE_DIR."/fotos/".$p->imageurl))
-    unlink(SITE_DIR."/fotos/".$p->imageurl);
+  if ($p->imageurl!=null && file_exists($files_dir."/fotos/".$p->imageurl))
+    unlink($files_dir."/fotos/".$p->imageurl);
   
   if ($url=="null" || $url=="")
     db_query("UPDATE {cdb_gemeindeperson} SET imageurl=null WHERE person_id=$id");
@@ -1236,7 +1237,7 @@ class CTChurchDBModule extends CTAbstractModule {
     $res["auth"] = churchdb_getAuthForAjax();
     $res["site_name"] = variable_get("site_name");
     $res["modulespath"] = churchdb_getModulesPath();
-    $res["files_url"] = $base_url.SITE_DIR;  
+    $res["files_url"] = $base_url.$files_dir;  
     $res["modulename"] = "churchdb";
     $res["max_uploadfile_size_kb"] = variable_get('max_uploadfile_size_kb');
     $res["adminemail"] = variable_get('site_mail', '');
