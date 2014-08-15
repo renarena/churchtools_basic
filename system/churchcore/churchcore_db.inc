@@ -572,7 +572,7 @@ function ajax() {
 }
 
 /**
- * Description
+ * TODO: add description, rename to show function - interface to what? DB, cal, ...?
  *
  */
 class CTInterface {

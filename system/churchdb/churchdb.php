@@ -365,7 +365,8 @@ function getBirthdaylistContent($desc, $diff_from, $diff_to, $extended=false) {
     $see_details=(user_access("view","churchdb")) && (user_access("view alldata","churchdb"));
     
     $res = getBirthdayList($diff_from, $diff_to);
-    if ($res!=null) {
+    if (!empty($res)) 
+    {
       if ($desc!="") $txt.="<p><h4>$desc</h4>";
       if ($extended) {
         $txt.="<table class=\"table table-condensed\"><tr><th style=\"max-width:65px;\"><th>".t("name").

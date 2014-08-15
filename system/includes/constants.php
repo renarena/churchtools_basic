@@ -3,7 +3,7 @@
  *  constants to use anywhere
  */
 
-//next two maybe not needed?
+//TODO: next two maybe not needed?
 define('SITES', 'sites');
 define('DEFAULT_SITE', SITES.'/default');
 

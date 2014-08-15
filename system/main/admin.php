@@ -107,7 +107,7 @@ function admin_main() {
   // Now iterate through each module getting the admin forms
   $m=array();
   foreach ($modules as $module) {
-    include_once(constant(strtoupper($modul))."/$module.php");
+    include_once(constant(strtoupper($module))."/$module.php");
     if (function_exists($module."_getAdminModel")) {
       $model=call_user_func($module."_getAdminModel");
       if ($model!=null)

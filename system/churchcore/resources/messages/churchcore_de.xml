@@ -51,7 +51,7 @@
   
   
   <!-- AUTH -->
-  <entry key="not.␣">Nicht vorhanden!</entry>
+  <entry key="not.existent">Nicht vorhanden!</entry>
   <entry key="no.sufficient.permission">Keine ausreichende Berechtigung. Das Recht {0} ist notwendig.</entry>
   <entry key=""></entry>
   <entry key=""></entry>
@@ -164,10 +164,12 @@
   <entry key="mrs.">Frau</entry>
   <entry key="who.is.online">Wer ist online?</entry>
   <entry key="no.entry.found">Keinen Eintrag gefunden.</entry>
-  <entry key="admin.my.membership">Meine Teilnahme verwalten</entry>
+  <entry key="manage.my.membership">Meine Teilnahme verwalten</entry>
   <entry key="todos.in">Aufgaben in {0}</entry>
   <entry key="apply.for.group.membership">Hier kannst Du eine Teilnahme beantragen</entry>
   <entry key="quit.group.membership">Hier kannst Du eine Teilnahme beenden</entry>
+  <entry key="error.requesting.group.membership">Gruppenteilnahme konnte nicht beantragt werden.</entry>
+  
   <entry key="last.x.days">Letzten {0} Tage</entry>
   <entry key="next.x.days">Nächsten {0} Tage</entry>
   <entry key="your.pending.service.requests">Deine offenen Dienstanfragen</entry>
@@ -299,11 +301,48 @@
   <!-- 2014-07-23 -->
   <entry key="query">Abfrage</entry>
   <entry key="report">Bericht</entry>
-  <entry key="german">Deutsch</entry>
+  <entry key="german">Deutsch</entry> <!-- TODO: no need to translate language names, should be always in the respective language ;-)  -->
   <entry key="english">Englisch</entry>
   <entry key="french">Französisch</entry>
   <entry key="select.language">Sprache auswählen</entry>
   <entry key="please.select.your.language">Bitte wähle Deine gewünschte Sprache</entry>
   <entry key="close">Schliessen</entry>
       
+  <!-- file upload -->
+  <entry key="uploaddircetdory.not.writable">Serverfehler. Das upload Directory ist nicht beschreibbar.</entry>
+  <entry key="no.uploaded.files">Es wurden keine Dateien hochgeladen.</entry>
+  <entry key="file.is.empty">Die Datei ist leer.</entry>
+  <entry key="file.is.to.large">Die Datei ist zu groß.</entry>
+  <entry key="invalid.fileextension.should.be.one.of.this">Die Datei hat eine ungültige Erweiterung. Erlaubt sind folgende: {0}'</entry>
+  <entry key="could.not.save.for.file.upload.canceled.or.server.error">Die hochgeladene Datei konnte nicht gespeichert werden (Das Hochladen wurde abgebrochen oder es trat ein Serverfehler auf).</entry>
+
+  <!-- churchdb --> 
+  <entry key="request.to.group">Anfrage zur Gruppe {0}.</entry>
+  <entry key="surname">Vorname</entry>
+  <entry key="name">Name</entry>
+  <entry key="email">E-Mail</entry>
+  <entry key="phone">Telefon</entry>
+  <entry key="comment">Kommentar</entry>
+  <entry key="form.request.to.group">Formular-Anfrage zur Gruppe {0}</entry>
+  <entry key="could.not.find.group.leader.please.try.other.ways">Leider konnte kein Gruppenleiter gefunden werden. Bitte versuchen Sie es auf einem anderen Weg!</entry>
+  <entry key="email.send.to">Es wurde eine E-Mail an {0} gesendet!</entry>
+  <entry key="unknown.call">Unbekannter Aufruf: {0}</entry>
+  <entry key="hello.name">Hallo {0}!</entry>
+  <entry key="request.by.external.mapview">Anfrage über externe MapView</entry>
+  <entry key="request.changed.by.external.mapview">Anfrage über externe MapView</entry>
+  <entry key="person.found.and.request.sent">Person wurde gefunden und Anfrage gesendet!</entry>
+  <entry key="request.by.form">Anfrage über Formular</entry>
+  <entry key="request.quitting.by.form">Beendigung angefragt über Formular</entry>
+  <entry key="membership.requested.by.form.leader.will.be.informed">Die Teilnahme an <i>{0}</i> ist nun beantragt, der Leiter wird informiert. Vielen Dank!</entry>
+  <entry key="membership.marked.for.deleting">Die Teilnahme an <i>{0}</i> wurde zum Löschen markiert.</entry>
+  <entry key="error.quitting.membership">Gruppenteilnahme konnte nicht beendet werden.</entry>
+  <entry key="username.not.available.ask.admin">Der Usernamen {0} ist schon vergeben, bitte wende Dich an den Administrator!</entry> <!-- TODO:lieber "wähle einen anderen" statt fragen? -->
+  <entry key="person.already.has.an.username.ask.admin">Diese Person hat schon einen Usernamen! Bitte wende Dich an einen Adminstrator!</entry>
+  <entry key=""></entry>
+  <entry key=""></entry>
+  <entry key=""></entry>
+  <entry key=""></entry>
+  <entry key=""></entry>
+  <entry key=""></entry>
+
 </properties>

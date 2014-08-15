@@ -52,7 +52,7 @@
   
   <!-- AUTH -->
   <entry key="not.existent">Inexistant!</entry>
-	<entry key="no.sufficient.permission">No sufficient permission! You need the right {0}.</entry>
+  <entry key="no.sufficient.permission">No sufficient permission! You need the right {0}.</entry>
   
   <!-- ABOUT -->
   <entry key="permissions">Autorisations</entry>  
@@ -303,6 +303,37 @@
   <entry key="select.language">Sélect langue</entry>
   <entry key="please.select.your.language">Sélectionnez votre langue</entry>
       
+  <!-- file upload -->  	  
+  <entry key="uploaddircetdory.not.writable">Server error. Upload directory isn't writable.</entry>
+  <entry key="no.uploaded.files">No files were uploaded.</entry>
+  <entry key="file.is.empty">File is empty.</entry>
+  <entry key="file.is.to.large">File is too large</entry>
+  <entry key="invalid.fileextension.should.be.one.of.this">File has an invalid extension, it should be one of {0}'</entry>
+  <entry key="could.not.save.for.file.upload.canceled.or.server.error">Could not save uploaded file. The upload was cancelled, or server error encountered</entry>
+
+<!-- churchdb --> 
+  <entry key="request.to.group">Request to group {0}.</entry>
+  <entry key="surname">Surname</entry>
+  <entry key="name">Name</entry>
+  <entry key="email">Email</entry>
+  <entry key="phone">Phone</entry>
+  <entry key="comment">Comment</entry>
+  <entry key="form.request.to.group">request by form for group {0}</entry>
+  <entry key="could.not.find.group.leader.please.try.other.ways">orry, no group leader was found. Please try it using other ways!</entry>
+  <entry key="email.send.to">Email was sent to{0}!</entry>
+  <entry key="unknown.call">Unknown call: {0}</entry>
+  <entry key="hello.name">Hello {0}!</entry>
+  <entry key="request.by.external.mapview">Request by external MapView</entry>
+  <entry key="request.changed.by.external.mapview">Request changed by external MapView</entry>
+  <entry key="person.found.and.request.sent">Person was found and request sent!</entry>
+  <entry key="request.by.form">Request by form</entry>
+  <entry key="request.quitting.by.form">Ending membership was requested by form</entry>
+  <entry key="membership.requested.by.form.leader.will.be.informed">Membership for <i>{0}</i> is applied, the leader will be informed. Thank you!</entry>
+  <entry key="membership.marked.for.deleting">Membership for <i>{0}</i> was marked for deletion.</entry>
+  <entry key="error.quitting.membership">Group membership could not be deleted.</entry>
+  <entry key="cron.error.subscribing.on.mailchimp">CRON - Error subscribing for MailChimp</entry>
+  <entry key="username.not.available.ask.admin">The username {0} ist alread in use, please ask an administrator!</entry>
+  <entry key="person.already.has.an.username.ask.admin">This user already has an username! Please ask an adminstrator!</entry>
   
   
 </properties>
