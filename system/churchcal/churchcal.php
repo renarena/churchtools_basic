@@ -15,9 +15,9 @@ function churchcal_main() {
   global $config, $base_url, $config, $embedded;
   include_once(INCLUDES."/forms.php");
   
-  drupal_add_css(ASSETS.'fullcalendar/fullcalendar.css');
+  drupal_add_css(ASSETS.'/fullcalendar/fullcalendar.css');
   if (isset($_GET["printview"]))
-    drupal_add_css(ASSETS.'/assets/fullcalendar/fullcalendar.print.css');
+    drupal_add_css(ASSETS.'/fullcalendar/fullcalendar.print.css');
   
   drupal_add_css(ASSETS.'/simplecolorpicker/jquery.simplecolorpicker.css');
   drupal_add_js(ASSETS.'/simplecolorpicker/jquery.simplecolorpicker.js');
@@ -37,7 +37,7 @@ function churchcal_main() {
   
   $txt='';
 
-  if ((isset($_GET["category_id"])) && ($_GET["category_id"]!="") && ($_GET["category_id"]!="null"))
+  if (!empty($_GET["category_id"]))
     $txt.='<input type="hidden" id="filtercategory_id" name="category_id" value="'.$_GET["category_id"].'"/>';
     
   if ($embedded) {
@@ -48,7 +48,7 @@ function churchcal_main() {
       drupal_add_css($_GET["cssurl"]);
     }    
     
-    if ((isset($_GET["category_select"])) && ($_GET["category_select"]!="") && ($_GET["category_select"]!="null"))
+    if (!empty($_GET["category_select"]))
       $txt.='<input type="hidden" id="filtercategory_select" name="category_select" value="'.$_GET["category_select"].'"/>';
     if ((isset($_GET["minical"]) && ($_GET["minical"]=="true")))
       $txt.='<input type="hidden" id="isminical"/>';

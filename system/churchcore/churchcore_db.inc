@@ -1287,13 +1287,9 @@ function checkForDBUpdates() {
  */
 function variable_get($var, $default=null) {
   global $config, $mapping;
-  if (isset($config[$var]))  
-    return $config[$var];
-  else if (isset($mapping[$var]))  
-    return $mapping[$var];
-  else if ($default!=null)
-    return $default;
-  return null;
+  if (isset($config[$var])) return $config[$var];
+  else if (isset($mapping[$var])) return $mapping[$var];
+  return $default;
 }
 
 /**
