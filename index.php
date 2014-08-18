@@ -13,6 +13,7 @@ try {
   }
   //TODO: find a good place for constants.php
   require ("system/includes/constants.php");
+  include_once (CHURCHCORE ."/functions.php");
   include_once (INCLUDES."/start.php");
   churchtools_main ();
 }

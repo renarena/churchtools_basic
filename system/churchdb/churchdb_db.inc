@@ -137,9 +137,11 @@ function getAuthForPerson($id) {
 
 /**
  * get auth for domain
+ * 
+ * TODO: will be called for each person in arrays (e.g. from getSearchableData) - a single statement should be used which will be only executed for each person
  *
- * @param int $id          
- * @param string $domain_type          
+ * @param int $id person id         
+ * @param string $domain_type; person, ..., ...       
  *
  * @return array auth
  */
@@ -645,8 +647,7 @@ function getAllTags() {
 /**
  * Get group data (name, type, mail flag) of $g_id
  *
- * @param
- *          $g_id
+ * @param int $g_id
  *          
  * @return object db result
  */
@@ -654,8 +655,7 @@ function getGroupInfo($g_id) {
   $sql = "SELECT g.id, g.bezeichnung gruppe, gt.bezeichnung gruppentyp, g.mail_an_leiter_yn 
         FROM {cdb_gruppe} g, {cdb_gruppentyp} gt 
         WHERE g.gruppentyp_id=gt.id AND g.id=:g_id";
-  $return = db_query($sql, array (':g_id' => $g_id
-  ))->fetch();
+  $return = db_query($sql, array (':g_id' => $g_id))->fetch();
   return $return;
 }
 

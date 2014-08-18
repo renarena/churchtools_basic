@@ -41,7 +41,7 @@ function churchcal_handleMeetingRequest($cal_id, $params) {
         }
       
         $txt.="<p>Zum Zu- oder Absagen bitte hier klicken:";      
-        $loginstr=churchcore_createPersonLoginStr($id);      
+        $loginstr=churchcore_createOnTimeLoginKey($id);      
         $txt.='<p><a href="'.$base_url.'?q=home&id='.$id.'&loginstr='.$loginstr.'" class="btn btn-primary">%sitename aufrufen</a>';      
         churchcore_sendEMailToPersonids($id, "[".variable_get('site_name', 'ChurchTools')."] Neue Termin-Anfrage", $txt, null, true);
       }

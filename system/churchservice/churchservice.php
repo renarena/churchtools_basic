@@ -545,7 +545,7 @@ function churchservice_openservice_rememberdays() {
       $txt.=' von <i>'.$inviter->vorname." ".$inviter->name."</i>";
     $txt.=" zu Diensten vorgeschlagen. <br/>Zum Zu- oder Absagen bitte hier klicken:";
 
-    $loginstr=churchcore_createPersonLoginStr($res->p_id);
+    $loginstr=churchcore_createOnTimeLoginKey($res->p_id);
       
     $txt.='<p><a href="'.$base_url.'?q=home&id='.$res->p_id.'&loginstr='.$loginstr.'" class="btn btn-primary">%sitename</a>';
     

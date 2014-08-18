@@ -158,16 +158,14 @@ function loadUserObjectInSession() {
     // Wenn nicht ausgeloggt wird und RememberMe bei der letzten Anmeldung aktiviert wurde
     if (($q != "logout") && (isset($_COOKIE['RememberMe'])) && ($_COOKIE['RememberMe'] == 1)) {
       if (isset($_COOKIE['CC_SessionId'])) {
-        $res = db_query("select * from {cc_session} where session=:session and hostname=:hostname", array (
-                                                                                                            ":session" => $_COOKIE['CC_SessionId'], 
-                                                                                                            ":hostname" => $_SERVER["HTTP_HOST"]
-        ));
+        $res = db_query("SELECT * FROM {cc_session} WHERE session=:session AND hostname=:hostname", 
+            array (":session" => $_COOKIE['CC_SessionId'], 
+                   ":hostname" => $_SERVER["HTTP_HOST"]));
         // if session exists, read user data
         if ($res != false) {
           $res = $res->fetch();
           if (isset($res->person_id)) {
-            $res = db_query("select * from {cdb_person} where id=:id", array (":id" => $res->person_id
-            ))->fetch();
+            $res = db_query("select * from {cdb_person} where id=:id", array (":id" => $res->person_id))->fetch();
             $res->auth = getUserAuthorization($res->id);
             $_SESSION['user'] = $res;
             addInfoMessage("Willkommen zur&uuml;ck, " . $res->vorname . "!", true);
@@ -183,11 +181,11 @@ function loadUserObjectInSession() {
     $_SESSION["user"]->auth = getUserAuthorization($_SESSION["user"]->id);
     if (isset($_COOKIE['CC_SessionId'])) {
       $dt = new DateTime();
-      db_query("update {cc_session} set datum=:datum where person_id=:p_id and session=:session and hostname=:hostname", array (
-                                                                                                                                ":datum" => $dt->format('Y-m-d H:i:s'), 
-                                                                                                                                ":session" => $_COOKIE['CC_SessionId'], 
-                                                                                                                                ":p_id" => $_SESSION["user"]->id, 
-                                                                                                                                ":hostname" => $_SERVER["HTTP_HOST"]
+      db_query("UPDATE {cc_session} SET datum=:datum WHERE person_id=:p_id AND session=:session AND hostname=:hostname", 
+      array (":datum" => $dt->format('Y-m-d H:i:s'), 
+             ":session" => $_COOKIE['CC_SessionId'],
+             ":p_id" => $_SESSION["user"]->id,
+             ":hostname" => $_SERVER["HTTP_HOST"],
       ));
     }
   }
@@ -245,15 +243,16 @@ function pleaseAcceptDatasecurity() {
 /**
  * Will call churchservice => churchservice_main or churchservice/ajax => churchservice_ajax
  * 
- * @param $q -
- *          Complete request URL inkl. suburl e.g. churchservice/ajax
+ * @param $q - Complete request URL inkl. suburl e.g. churchservice/ajax
+ * 
+ * TODO: should completely rewritten, using some classes
  */
 function churchtools_processRequest($_q) {
   global $mapping, $config, $q;
   
   $content = "";
   
-  // Pr�fe Mapping
+  // include mapped file
   if (isset($mapping[$_q])) {
     include_once (SYSTEM . "/" . $mapping[$_q]);
     
@@ -269,7 +268,7 @@ function churchtools_processRequest($_q) {
       if (!userLoggedIn()) {
         if (strrpos($q, "ajax") === false) {
           $q = "login";
-          return churchtools_processRequest("login");
+          return churchtools_processRequest("login"); 
         }
         else {
           drupal_json_output(jsend()->error("Session expired!"));
@@ -283,6 +282,7 @@ function churchtools_processRequest($_q) {
         return "";
       }
     }
+    // does the main work?
     $content .= call_user_func($_q . "_" . $param);
     if ($content == null) die();
   }
@@ -298,16 +298,22 @@ function churchtools_processRequest($_q) {
  * If everything is ok, it calls churchtools_processRequest()
  */
 function churchtools_main() {
-  global $q, $q_orig, $add_header, $config, $mapping, $content, $base_url, $files_dir, $user, $embedded, $i18n;
-  
-  $base_url = getBaseUrl();
-  
+  global $q, $q_orig, $currentModule, $add_header, $config, $mapping, $content, $base_url, $files_dir, $user, $embedded, $i18n;
   include_once (CHURCHCORE . "/churchcore_db.inc");
   include_once (SYSTEM . "/lib/i18n.php");
   
+  // which module is requested?
+  $q = $q_orig = readVar("q", userLoggedIn() ? "home" : readConf("site_startpage", "home"));
+  // $currentModule is needed for class autoloading and maybe other include paths
+  list($currentModule) = explode('/', readVar("q")); //get first part of $q or churchcore
+  $embedded = readVar("embedded", false);
+  
+  $base_url = getBaseUrl();
+  
+  
   $config = loadConfig();
   
-  if ($config != null) {
+  if ($config) {
     if (db_connect()) {
       // DBConfig overwrites the config files
       loadDBConfig();
@@ -348,18 +354,10 @@ function churchtools_main() {
         }
       }
       // which module is requested?
-      if (isset($_GET["q"])) $q = $_GET["q"];
-      if ($q == "") if (userLoggedIn()) $q = "home";
-                    else $q = variable_get("site_startpage", "home");
-      
-      $q = isset($_GET["q"]) ? $_GET["q"] : (userLoggedIn() ? "home" : variable_get("site_startpage", "home"));
-      
-      $q_orig = $q;
-      
-      if ((isset($_GET["embedded"]) && ($_GET["embedded"] == true))) $embedded = true;
-      
+      //TODO: need this on top of function to assure all time availability
+//       $q = $q_orig = readVar("q", userLoggedIn() ? "home" : readConf("site_startpage", "home"));
+      $embedded = readVar("embedded", false);
       $mapping = loadMapping();
-      
       $success = true;
       // Check for DB-Updates and loginstr only if this is not an ajax call.
       if (strrpos($q, "ajax") === false) {

@@ -332,6 +332,9 @@
   <entry key="cron.error.subscribing.on.mailchimp">CRON - Error subscribing for MailChimp</entry>
   <entry key="username.not.available.ask.admin">The username {0} ist alread in use, please ask an administrator!</entry>
   <entry key="person.already.has.an.username.ask.admin">This user already has an username! Please ask an adminstrator!</entry>
+  <entry key="invitation.email.standard.text">'You are invited to use {0}.<p>Clicke on the following button, to log in the page and choose a password:</p>'</entry>
+  <entry key="no.sms.sent.person.has.no.mobile.number">NO sms was send for Person has no mobile number stored!</entry>
+  <entry key="email.already.used.you.need.more.rights.to.change.this">This email address is already in use. To save an used email you need more permissions.</entry>
   
   
 </properties>
