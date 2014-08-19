@@ -1,30 +1,27 @@
 <?php
-
 /**
- * core functions used in churchtools
+ *  core functions used in churchtools
  */
 
 /**
- *
  * @ignore
- *
  */
-// if (!defined('IN_CT')) exit; //TODO: should this be added to each php file to prevent using it from outside CT?
+//if (!defined('IN_CT')) exit; //TODO: should this be added to each php file to prevent using it from outside CT?
 
 /**
  * autoloads needed classes
  * TODO: need module home to be handled separate?
- *
- * @param string $class_name          
+ * can we identify core classes without file_exists?
+ * look at http://php.net/manual/en/function.spl-autoload.php if we should use this instead
+ * 
+ * @param string $class_name
  * @return nothing
  *
- *
- */
-function __autoload($class_name) {
-  global $currentModule;
-  if (file_exists(CHURCHCORE . "/" . CLASSES . $class_name . '.php')) require_once CHURCHCORE . "/" . CLASSES .
-       $class_name . '.php';
-  else require_once constant(strtoupper($currentModule)) . "/" . CLASSES . $class_name . '.php';
+ **/
+function __autoload($class_name)
+{
+  if (file_exists(CHURCHCORE.CLASSES."/".$class_name.'.php')) include CHURCHCORE.CLASSES."/".$class_name.'.php';
+  else include constant(strtoupper($GLOBALS['currentModule'])).CLASSES."/".$class_name.'.php';
 }
 
 /**

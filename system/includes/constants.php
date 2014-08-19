@@ -20,6 +20,7 @@ define('CHURCHCAL',      SYSTEM.'/churchcal');
 define('CHURCHWIKI',     SYSTEM.'/churchwiki');
 define('CHURCHREPORT',   SYSTEM.'/churchreport');
 define('CHURCHRESOURCE', SYSTEM.'/churchresource');
+define('CLASSES',        '/classes');
 
 
 

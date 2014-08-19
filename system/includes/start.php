@@ -366,8 +366,7 @@ function churchtools_main() {
       
       if ($success) {
         // Is there a loginstr which does not fit to the current logged in user?
-        if ((isset($_GET["loginstr"])) && (isset($_GET["id"])) && (userLoggedIn()) &&
-             ($_SESSION["user"]->id != $_GET["id"])) {
+        if (readVar("loginstr") && readVar("id") && userLoggedIn() && $_SESSION["user"]->id != readVar("id")) {
           logout_current_user();
           session_start();
         }
